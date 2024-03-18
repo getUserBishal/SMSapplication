@@ -7,8 +7,10 @@
     "require": {
         "php": "^8.2",
         "ixudra/curl": "^6.22",
+        "laravel/breeze": "^2.0",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
+        "laravel/ui": "^4.5",
         "royceltd/laravel-bulksms": "^1.5"
     },
     "require-dev": {

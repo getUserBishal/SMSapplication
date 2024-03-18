@@ -2,29 +2,34 @@
 
 namespace App\Http\Controllers;
 
-
-use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\contact_groups;
 use App\Models\contacts;
+use App\Models\sentTextMessage;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use RoyceLtd\LaravelBulkSMS\Facades\RoyceBulkSMS;
-use RoyceLtd\LaravelBulkSMS\Models\SentTextMessage;
 use Ixudra\Curl\Facades\Curl;
 
-
-class RoyceController extends Controller
+class HomeController extends Controller
 {
-    //
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
     public function __construct()
     {
-        //$this->middleware('auth', ['except' => ['index', 'receiveDeliveryReport']]);
+        $this->middleware('auth');
     }
 
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
     public function index()
     {
-        return 'ok';
+        return view('home');
     }
 
     public function messages()
@@ -254,7 +259,7 @@ class RoyceController extends Controller
     {
         //log::info($request->all());
 
-        $res = SentTextMessage::where('message_id',$request->message_id)->first();
+        $res = sentTextMessage::where('message_id',$request->message_id)->first();
         $res->delivery_time=$request->delivery_time;
         $res->delivery_tat=$request->delivery_tat;
         $res->delivery_description=$request->delivery_description;
