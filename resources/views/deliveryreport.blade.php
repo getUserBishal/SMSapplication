@@ -11,7 +11,7 @@
     <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" > </script>
 </head>
 <body> --}}
-    @extends('royceviews::base')
+    @extends('base')
 
     @section('content')
 
@@ -30,7 +30,7 @@
             </div>
         </div>
 
-       <form action="{{url('bulksms/delivery-report')}}" method="post">
+       <form action="{{url('delivery-report')}}" method="post">
         {{ csrf_field() }}
         <div class="row">
             <div class="col-sm-6">

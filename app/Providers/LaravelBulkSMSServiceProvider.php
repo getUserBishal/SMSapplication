@@ -28,7 +28,7 @@ class LaravelBulkSMSServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'royceviews');
+        //$this->loadViewsFrom(__DIR__ . '/../resources/views', 'royceviews');
         //$this->loadRoutesFrom(__DIR__ . '/routes/web.php');
         //$this->loadMigrationsFrom(__DIR__.'/../database/migrations');
     }

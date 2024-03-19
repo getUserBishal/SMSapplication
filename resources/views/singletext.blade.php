@@ -11,7 +11,7 @@
     <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" > </script>
 </head>
 <body> --}}
-    @extends('royceviews::base')
+    @extends('base')
 
     @section('content')
 
@@ -19,7 +19,7 @@
 
         <div class="row">
             <div class="col-sm-12">
-                <h4>Send Single Text</h4>
+                <h4>Bulk SMS</h4>
 
 
             </div>
@@ -28,7 +28,7 @@
             If you have contacts in excel, Copy column and past the box, There should be one phone number per line
         </div>
 
-        <form action="{{url('bulksms/single-text')}}" method="POST">
+        <form action="{{url('single-text')}}" method="POST">
 
 
         <div class="row pull-left">

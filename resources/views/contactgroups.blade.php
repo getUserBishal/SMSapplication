@@ -11,7 +11,7 @@
     <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" > </script>
 </head>
 <body> --}}
-    @extends('royceviews::base')
+    @extends('base')
 
     @section('content')
 
@@ -39,7 +39,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="{{url('/bulksms/contacts-group')}}" method="POST">
+      <form action="{{url('contacts-group')}}" method="POST">
         {{ csrf_field() }}
 
       <div class="modal-body">
@@ -99,7 +99,7 @@
                     <td>{{ $value->created_at }}</td>
 
                     <td>
-                        <a href="{{url('/bulksms/edit-group',$value->id)}}" class="btn btn-sm btn-primary">Edit</a>
+                        <a href="{{url('edit-group',$value->id)}}" class="btn btn-sm btn-primary">Edit</a>
                     </td>
 
                 </tr>

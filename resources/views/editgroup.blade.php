@@ -11,7 +11,7 @@
     <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" > </script>
 </head>
 <body> --}}
-    @extends('royceviews::base')
+    @extends('base')
 
     @section('content')
 
@@ -24,7 +24,7 @@
 
             </div>
         </div>
-        <form method="POST" action="{{url('/bulksms/edit-contact-group')}}">
+        <form method="POST" action="{{url('edit-contact-group')}}">
             {{ csrf_field() }}
             <div class="row">
                 <input type="hidden" name="id" value="{{$group->id}}" />

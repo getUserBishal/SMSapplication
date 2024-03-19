@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\contact_groups;
-use App\Models\contacts;
-use App\Models\sentTextMessage;
+use App\Models\Contact;
+use App\Models\ContactGroup;
+use App\Models\SentTextMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use RoyceLtd\LaravelBulkSMS\Facades\RoyceBulkSMS;
@@ -35,8 +35,8 @@ class HomeController extends Controller
     public function messages()
     {
         $messages = SentTextMessage::orderBy('id', 'desc')->paginate(50);
-        // dd($messages);
-        return view('royceviews::textmessages', ['messages' => $messages]);
+        //dd($messages);
+        return view('textmessage', ['messages' => $messages]);
     }
 
     public function deliveryReport(Request $request){
@@ -53,49 +53,50 @@ class HomeController extends Controller
     }
 
     public function base(){
-        return view('royceviews::base');
+        //dd('');
+        return view('base');
 
     }
 
     public function contacts(){
-        $contacts= contacts::join('contact_groups','contact_groups.id','=','contacts.group_id')
+        $contacts= Contact::join('contact_groups','contact_groups.id','=','contacts.group_id')
         ->select('contacts.*','contact_groups.name as group')
         ->get();
         // dd($apikey);
-        $groups=contact_groups::all();
-        return view('royceviews::contacts',['contacts'=>$contacts,'status'=>'My Contact','groups'=>$groups]);
+        $groups=ContactGroup::all();
+        return view('contacts',['contacts'=>$contacts,'status'=>'My Contact','groups'=>$groups]);
 
     }
 
     public function deleteContact($id){
 
-        $contact=contacts::find($id)->delete();
+        $contact=Contact::find($id)->delete();
         return back()->with('status','Contact deleted succesfully');
-        // return view('royceviews::contacts',['status'=>'Contact deleted succesfully']);
+        // return view('contacts',['status'=>'Contact deleted succesfully']);
 
     }
 
     public function contactsGroup(){
-        $groups= contact_groups::withCount('contacts')->get();
+        $groups= ContactGroup::withCount('contacts')->get();
         // dd($groups);
         // dd($apikey);
-        return view('royceviews::contactgroups',['groups'=>$groups]);
+        return view('contactgroups',['groups'=>$groups]);
 
     }
 
     public function editGroup($id){
-        $group= contact_groups::find($id);
+        $group= ContactGroup::find($id);
 
         // $groups= ContactGroup::withCount('contacts')->get();
-        return view('royceviews::editgroup',['group'=>$group]);
+        return view('editgroup',['group'=>$group]);
     }
 
     public function editContactGroup(Request $request){
-        $group= contact_groups::find($request->id);
+        $group= ContactGroup::find($request->id);
         $group->name=$request->group;
         $group->save();
 
-        return redirect('/bulksms/contacts-group');
+        return redirect('contacts-group');
 
     }
 
@@ -105,7 +106,7 @@ class HomeController extends Controller
         //     'first_namesf'=>'required'
 
         // ]);
-        $contact= new contacts();
+        $contact= new Contact();
         $contact->first_name=$request->first_name;
         $contact->other_names=$request->other_names;
         $contact->phone_number=$request->phone_number;
@@ -118,12 +119,27 @@ class HomeController extends Controller
 
     }
 
+    public function saveContactsGroup(Request $request){
+        $this->validate($request,[
+            'group'=>'required|unique:contact_groups,name'
+
+        ]);
+        $group=new ContactGroup();
+        $group->name=$request->group;
+        $group->description=$request->description;
+        $group->save();
+
+        return back()->with('status','Group saved successfully');
+
+    }
+
     public function singleText(){
 
-        return view('royceviews::singletext');
+        return view('singletext');
     }
 
     public function sendSingleText(Request $request){
+        // $phone = "9843820568";
         // $message= $request->message;
 
         $phone_number = explode("\n", $request->phone_numbers);
@@ -134,14 +150,14 @@ class HomeController extends Controller
              RoyceBulkSMS::sendSMS($phone, $request->message);
 
         }
-        return redirect('bulksms/dashboard')->with('status','SMS sent successfully');
+        return redirect('dashboard')->with('status','SMS sent successfully');
 
     }
 
     public function contactsText(){
-        $contacts= contacts::all();
+        $contacts= Contact::all();
 
-        return view('royceviews::contacttext',['contacts'=>$contacts]);
+        return view('contacttext',['contacts'=>$contacts]);
 
     }
 
@@ -165,15 +181,15 @@ class HomeController extends Controller
 
         }
 
-        return redirect('bulksms/dashboard')->with('status','SMS sent successfully');
+        return redirect('dashboard')->with('status','SMS sent successfully');
 
     }
 
     public function groupText(){
 
-        $groups= contact_groups::all();
+        $groups= ContactGroup::all();
 
-        return view('royceviews::grouptext',['groups'=>$groups]);
+        return view('grouptext',['groups'=>$groups]);
 
     }
 
@@ -184,7 +200,7 @@ class HomeController extends Controller
         foreach($request->groups as $group){
             // $separate= explode('}',$phone);
 
-            $contacts= contacts::where('group_id',$group)->get();
+            $contacts= Contact::where('group_id',$group)->get();
 
             foreach($contacts as $contact){
                 if($request->salutation=='Yes'){
@@ -203,13 +219,13 @@ class HomeController extends Controller
             // dd($message);
         }
 
-        return redirect('bulksms/dashboard')->with('status','SMS sent successfully');
+        return redirect('dashboard')->with('status','SMS sent successfully');
 
     }
 
     public function getDeliveryReport(){
 
-        return view('royceviews::deliveryreport',['status'=>'Enter message ID from outbox']);
+        return view('deliveryreport',['status'=>'Enter message ID from outbox']);
 
     }
 
@@ -230,7 +246,7 @@ class HomeController extends Controller
 
             if(!$response){
 
-                return view('royceviews::deliveryreport',['status'=>'Check the message id and try again']);
+                return view('deliveryreport',['status'=>'Check the message id and try again']);
 
 
             }
@@ -245,13 +261,13 @@ class HomeController extends Controller
 
             $text->save();
 
-            return view('royceviews::deliveryreport',['status'=>'Delivery Report','report'=>$res]);
+            return view('deliveryreport',['status'=>'Delivery Report','report'=>$res]);
 
 
     }
 
     public function setWebhook(){
-        return view('royceviews::webhook',['status'=>'Set Web hook URL']);
+        return view('webhook',['status'=>'Set Web hook URL']);
 
     }
 

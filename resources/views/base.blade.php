@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Bulk SMS</title>
+        <title>Sociar SMS</title>
         <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Core theme CSS (includes Bootstrap)-->
@@ -19,33 +19,33 @@
         <!-- Responsive navbar-->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
-                <a class="navbar-brand" href="{{url('bulksms/dashboard')}}">Bulk SMS <button class="btn btn-primary btn-sm">V 1.0</button></a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <a class="navbar-brand" href="{{url('dashboard')}}">Sociar SMS</a>
+                {{-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> --}}
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{{url('bulksms/dashboard')}}">Outbox</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{{url('dashboard')}}">Outbox</a></li>
                         {{-- <li class="nav-item"><a class="nav-link" href="#">Link</a></li> --}}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Send Text</a>
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Send SMS</a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="{{url('bulksms/single-text')}}">Single Text</a></li>
-                                <li><a class="dropdown-item" href="{{url('bulksms/contacts-text')}}">Send to contacts</a></li>
-                                <li><a class="dropdown-item" href="{{url('bulksms/group-text')}}">Send to group</a></li>
+                                <li><a class="dropdown-item" href="{{url('single-text')}}">Bulk SMS </a></li>
+                                <li><a class="dropdown-item" href="{{url('contacts-text')}}">Single SMS</a></li>
+                                <li><a class="dropdown-item" href="{{url('group-text')}}">Group SMS</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Contacts</a>
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Send To</a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="{{url('bulksms/contacts')}}">Contacts</a></li>
-                                <li><a class="dropdown-item" href="{{url('bulksms/contacts-group')}}">Contacts Group</a></li>
+                                <li><a class="dropdown-item" href="{{url('contacts')}}">Add Contact's</a></li>
+                                <li><a class="dropdown-item" href="{{url('contacts-group')}}">Add Contact Group's</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Delivery Report</a>
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Delivery Status</a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="{{url('bulksms/delivery-report')}}">Delivery Reports</a></li>
-                                <li><a class="dropdown-item" href="{{url('bulksms/set-webhook')}}">Automate Delivery Report</a></li>
-                                {{-- <li><a class="dropdown-item" href="{{url('bulksms/contacts-group')}}">Contacts Group</a></li> --}}
+                                <li><a class="dropdown-item" href="{{url('delivery-report')}}">Delivery Reports</a></li>
+                                {{-- <li><a class="dropdown-item" href="{{url('set-webhook')}}">Automate Delivery Report</a></li> --}}
+                                {{-- <li><a class="dropdown-item" href="{{url('contacts-group')}}">Contacts Group</a></li> --}}
                             </ul>
                         </li>
 
