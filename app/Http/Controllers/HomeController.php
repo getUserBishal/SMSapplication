@@ -161,28 +161,40 @@ class HomeController extends Controller
 
     }
 
-    public function sendContactsText(Request $request){
 
-        // dd($request->all());
+    public function sendContactsText(Request $request)
+    {
+        $token = '<token-provided>'; // Replace with your Sparrow SMS API token
+        $identity = '<Identity>'; // Replace with your sender identity
+        $recipientNumbers = implode(',', $request->phone_numbers);
 
-        foreach($request->phone_numbers as $phone){
-            $separate= explode('}',$phone);
+        $args = http_build_query(array(
+            'token' => $token,
+            'from'  => $identity,
+            'to'    => $recipientNumbers,
+            'text'  => $request->message
+        ));
 
-            if($request->salutation=='Yes'){
-                $message="Hello $separate[1], $request->message";
+        $url = "http://api.sparrowsms.com/v2/sms/";
 
-            }else{
-                $message=$request->message;
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-            }
+        // Execute cURL request
+        $response = curl_exec($ch);
+        $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
 
-            // dd($message);
-             RoyceBulkSMS::sendSMS($separate[0],$message );
-
+        if ($status_code == 200) {
+            // SMS sent successfully
+            return redirect('dashboard')->with('status', 'SMS sent successfully');
+        } else {
+            // Failed to send SMS
+            return redirect('dashboard')->with('error', 'Failed to send SMS');
         }
-
-        return redirect('dashboard')->with('status','SMS sent successfully');
-
     }
 
     public function groupText(){

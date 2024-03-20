@@ -83,12 +83,12 @@
                               <input type="text" name="alt_phone_number" class="form-control" />
                           </div>
                       </div>
-                      <div class="col-sm-4">
+                      {{-- <div class="col-sm-4">
                           <div class="form-group">
                               <label>Email <small>Optional</small></label>
                               <input type="email" name="email" class="form-control"  />
                           </div>
-                      </div>
+                      </div> --}}
                   </div>
 
                 <div class="modal-footer">

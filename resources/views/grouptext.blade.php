@@ -35,95 +35,97 @@
             </div>
         </div>
 
-        <form method="POST" action="{{url('group-text')}}">
-            {{ csrf_field() }}
-            <div class="row">
-                <div class="col-sm-4">
-                <div class="form-group">
-                    <label>
-                        Message
-                    </label>
-                    <textarea class="form-control pull-left" name="message" rows="5" required></textarea>
-                </div>
-            </div>
-            <div class="col-sm-5">
-                <div class="form-group">
+        <div style="background-color: rgb(228, 228, 228); padding: 20px; max-width: 600px; margin: 0 auto;">
+            <form method="POST" action="{{ url('group-text') }}">
+                {{ csrf_field() }}
 
-
-                    {{-- <div> --}}
-                        <br />
-
-                        <table>
-
-                            <tr>
-                                <td>
-                                    Include Salutation ?
-
-                                </td>
-                                <td>
-                                    <td>
-
-                                    <div class="form-check form-check-inline">
-  <input class="form-check-input" type="radio" name="salutation" id="inlineRadio1" value="Yes" checked>
-  <label class="form-check-label" for="inlineRadio1">Yes</label>
-</div>
-<div class="form-check form-check-inline">
-  <input class="form-check-input" type="radio" name="salutation" id="inlineRadio2" value="No">
-  <label class="form-check-label" for="inlineRadio2">No</label>
-</div>
-
-                                </td>
-
-                                </td>
-
-                            </tr>
-                            <tr>
-                                <td>
-                                     &nbsp;
-                                </td>
-
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="checkbox" id="checkAll" /> Select all ( <?php echo count($groups) ?>)
-
-                                </td>
-
-                            </tr>
-                        </table>
-                        <div>
-
-
+                <!-- Removed row class -->
+                <div>
+                    <div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea class="form-control" name="message" rows="5" required oninput="updateInfo(this.value)"></textarea>
                         </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label>Include Salutation?</label>
+                                <div>
+                                    <div>
+                                        <input class="form-check-input" type="radio" name="salutation" id="inlineRadio1" value="Yes" checked>
+                                        <label class="form-check-label" for="inlineRadio1">Yes</label>
+                                    </div>
+                                    <div>
+                                        <input class="form-check-input" type="radio" name="salutation" id="inlineRadio2" value="No">
+                                        <label class="form-check-label" for="inlineRadio2">No</label>
+                                    </div>
+                                </div>
+                            </div>
 
-
-                    {{-- </div> --}}
-                    <label>
-                        Groups
-                    </label>
-                    @foreach ($groups as $item)
-                    <br />
-                    <span class="float-left">
-
-                        <input type="checkbox" value="{{$item->id}}" name="groups[]" /> {{$item->name}}
-                    </span>
-
-
-                    @endforeach
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label for="groupSelect">Select Group:</label>
+                            <select class="form-control" id="groupSelect" name="selected_group">
+                                <option value="">Select a group</option>
+                                @foreach ($groups as $item)
+                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <input type="submit" class="btn btn-primary" value="Send SMS">
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-sm-2">
-                <div class="form-group">
-                    {{-- <label>
-                        Phone Numbers
-                    </label> --}}
-                    <input type="submit" class="btn btn-primary" value="Send SMS" />
-                </div>
-            </div>
+            </form>
+        </div>
 
         </div>
-            </div>
-        </form>
+
+        <div id="infoContainer" style="background-color: rgb(228, 228, 228); padding: 20px; max-width: 600px; margin: 20px auto;">
+            <p id="charCount">Characters: 0 / 160</p>
+            <p id="smsCount">SMS Count: 0</p>
+            <p id="numInfo">Numbers: 0 (NT 0 NC 0)</p>
+            <p id="rateInfo">Rate: NT 0.2 NC 0.2</p>
+            <p id="totalCost">Total Cost (0.00 + 0.00 +): 0.00</p>
+        </div>
+
+        <script>
+            function updateInfo(message) {
+                var charCount = message.length;
+                var smsCount = Math.ceil(charCount / 160);
+                document.getElementById('charCount').innerText = "Characters: " + charCount + " / 160";
+                document.getElementById('smsCount').innerText = "SMS Count: " + smsCount;
+                var totalCost = (smsCount * 0.2).toFixed(2);
+                document.getElementById('totalCost').innerText = "Total Cost (" + smsCount + " * 0.20 +): " + totalCost;
+            }
+
+            function updateNumbers() {
+                var checkboxes = document.getElementsByName('groups[]');
+                var numCount = 0;
+                var ntcCount = 0;
+                var ncellCount = 0;
+
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if (checkboxes[i].checked) {
+                        numCount++;
+                        var phoneNumber = checkboxes[i].value;
+                        // Check if the phone number is NTC or Ncell
+                        if (phoneNumber.startsWith("98")) { // Assuming NTC numbers start with 98
+                            ntcCount++;
+                        } else if (phoneNumber.startsWith("98")) { // Assuming Ncell numbers start with 98
+                            ncellCount++;
+                        }
+                    }
+                }
+                document.getElementById('numInfo').innerText = "Numbers: " + numCount + " (NT " + ntcCount + " NC " + ncellCount + ")";
+            }
+        </script>
+
 
 
 
