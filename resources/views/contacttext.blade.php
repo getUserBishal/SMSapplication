@@ -40,6 +40,7 @@
                 <label>Message</label>
                 <input type="text" class="form-control" name="message" id="message" oninput="updateInfo(this.value)">
                 <div id="recommendations" class="dropdown-menu" style="display: none;"></div>
+                <div id="nepaliSuggestionsDropdown" class="dropdown-menu" style="display: none;"></div>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="nepaliCheckbox" onchange="toggleNepaliMode()">
                     <label class="form-check-label" for="nepaliCheckbox">
@@ -47,8 +48,6 @@
                     </label>
                 </div>
             </div>
-
-
             <div>
                 <label>Include Salutation?</label>
                 <div>
@@ -98,20 +97,9 @@
             hideRecommendations();
         }
 
-        async function fetchNepaliSuggestions(input) {
-            const url = `https://inputtools.google.com/request?text=${input}&itc=ne-t-i0-und&num=13&cp=0&cs=1&ie=utf-8&oe=utf-8`;
 
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                if (data && data.length > 1 && data[1].length > 0) {
-                    return data[1][0];
-                }
-            } catch (error) {
-                console.error('Error fetching Nepali suggestions:', error);
-            }
-            return [];
-        }
+
+
 
         function updateNumbers() {
             var selectedNumbers = document.querySelectorAll('input[name="selected_phone_number[]"]:checked');
@@ -138,7 +126,7 @@
         async function updateInfo(text) {
             let charCount = text.length;
             let remainingChars = charCount;
-            let smsCount = 0; // Initialize smsCount here
+            let smsCount = 0;
 
             if (charCount <= 160) {
                 smsCount = 1;
@@ -169,67 +157,109 @@
             if (nepaliMode) {
                 const nepaliSuggestions = await fetchNepaliSuggestions(text);
                 if (nepaliSuggestions && nepaliSuggestions.length > 0) {
-                    document.getElementById('nepaliSuggestions').innerText = `Nepali Suggestions: ${nepaliSuggestions.join(', ')}`;
+                    const dropdown = document.getElementById('nepaliSuggestionsDropdown');
+                    dropdown.innerHTML = '';
+                    nepaliSuggestions.forEach(suggestion => {
+                        const option = document.createElement('div');
+                        option.classList.add('dropdown-item');
+                        option.textContent = suggestion;
+                        option.onclick = () => {
+                            document.getElementById('message').value = suggestion;
+                            hideRecommendations();
+                        };
+                        dropdown.appendChild(option);
+                    });
+                    dropdown.style.display = 'block'; // Show dropdown
+                } else {
+                    document.getElementById('nepaliSuggestionsDropdown').style.display = 'none'; // Hide dropdown if no suggestions
                 }
             } else {
-                document.getElementById('nepaliSuggestions').innerText = '';
-            }
+                document.getElementById('nepaliSuggestionsDropdown').style.display = 'none'; // Hide dropdown if Nepali mode is not enabled
+        }
+    }
 
-            if (nepaliMode) {
-                    const nepaliSuggestions = await fetchNepaliSuggestions(text);
-                    if (nepaliSuggestions && nepaliSuggestions.length > 0) {
-                        const suggestionsList = document.getElementById('nepaliSuggestions');
-                        suggestionsList.innerHTML = '';
-                        nepaliSuggestions.forEach(suggestion => {
-                            const suggestionItem = document.createElement('div');
-                            suggestionItem.textContent = suggestion;
-                            suggestionItem.classList.add('suggestion-item');
-                            suggestionItem.onclick = function() {
-                                document.getElementById('message').value += suggestion;
-                                suggestionsList.innerHTML = ''; // Clear suggestions after selecting one
-                                document.getElementById('message').focus();
-                            };
-                            suggestionsList.appendChild(suggestionItem);
-                        });
-                    }
-                } else {
-                    document.getElementById('nepaliSuggestions').innerHTML = '';
-                }
+    function displayRecommendations(recommendations) {
+    const dropdown = document.getElementById('recommendations');
+    dropdown.innerHTML = '';
+
+    recommendations.forEach(word => {
+        const option = document.createElement('div');
+        option.classList.add('dropdown-item');
+        option.textContent = word;
+        option.onclick = () => {
+            document.getElementById('message').value = word;
+            hideRecommendations();
+        };
+        dropdown.appendChild(option);
+    });
+
+    dropdown.style.display = 'block';
+}
+
+
+async function fetchNepaliSuggestions(input) {
+    const url = `https://inputtools.google.com/request?text=${input}&itc=ne-t-i0-und&num=13&cp=0&cs=1&ie=utf-8&oe=utf-8`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data && data.length > 1 && data[1].length > 0) {
+            return data[1];
+        }
+    } catch (error) {
+        console.error('Error fetching Nepali suggestions:', error);
+    }
+    return [];
+}
+
+
+    function hideRecommendations() {
+        document.getElementById('recommendations').innerHTML = ''; // Clear the recommendations
+        document.getElementById('recommendations').style.display = 'none';
+    }
+
+
+
+    function selectSuggestion(suggestion) {
+        document.getElementById('message').value = suggestion;
+        hideRecommendations();
+    }
+
+    function selectAll() {
+        var checkboxes = document.getElementsByName('selected_phone_number[]');
+        var checkAll = document.getElementById('checkAll');
+
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = checkAll.checked;
         }
 
-        function displayRecommendations(recommendations) {
-            const dropdown = document.getElementById('recommendations');
-            dropdown.innerHTML = '';
-            recommendations.forEach(word => {
-                const option = document.createElement('div');
-                option.classList.add('dropdown-item');
-                option.textContent = word;
-                option.onclick = () => {
-                    document.getElementById('message').value = word;
-                    hideRecommendations();
-                };
-                dropdown.appendChild(option);
-            });
-            dropdown.style.display = 'block';
-        }
+        updateNumbers();
+    }
+</script>
 
-        function hideRecommendations() {
-            document.getElementById('recommendations').style.display = 'none';
-        }
+{{-- <style>
+    .dropdown-item {
+        cursor: pointer;
+        padding: 5px;
+        border-bottom: 1px solid #ddd;
+        display: block; /* Display each recommendation on a new line */
+    }
 
+</style> --}}
 
-        function selectAll() {
-            var checkboxes = document.getElementsByName('selected_phone_number[]');
-            var checkAll = document.getElementById('checkAll');
+<style>
+    #recommendations {
+    position: absolute;
+    top: 100%; /* Position the recommendations box below the input */
+    left: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    max-height: 200px; /* Limit the maximum height of the recommendations box */
+    overflow-y: auto; /* Add vertical scrollbar if needed */
+    z-index: 999; /* Ensure the recommendations box is above other elements */
+}
 
-            for (var i = 0; i < checkboxes.length; i++) {
-                checkboxes[i].checked = checkAll.checked;
-            }
-
-            updateNumbers();
-        }
-    </script>
-
+</style>
 
 {{-- {{$messages->links("pagination::bootstrap-4")}} --}}
 <script>
