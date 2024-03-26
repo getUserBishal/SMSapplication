@@ -196,7 +196,6 @@
     dropdown.style.display = 'block';
 }
 
-
 async function fetchNepaliSuggestions(input) {
     const url = `https://inputtools.google.com/request?text=${input}&itc=ne-t-i0-und&num=13&cp=0&cs=1&ie=utf-8&oe=utf-8`;
 
