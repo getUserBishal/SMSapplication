@@ -155,69 +155,77 @@
             document.getElementById('totalCost').innerText = `Total Cost (${rate.toFixed(2)} + ${rate.toFixed(2)}): ${(totalRate).toFixed(2)}`;
 
             if (nepaliMode) {
-                const nepaliSuggestions = await fetchNepaliSuggestions(text);
-                if (nepaliSuggestions && nepaliSuggestions.length > 0) {
-                    const dropdown = document.getElementById('nepaliSuggestionsDropdown');
-                    dropdown.innerHTML = '';
-                    nepaliSuggestions.forEach(suggestion => {
-                        const option = document.createElement('div');
-                        option.classList.add('dropdown-item');
-                        option.textContent = suggestion;
-                        option.onclick = () => {
-                            document.getElementById('message').value = suggestion;
-                            hideRecommendations();
-                        };
-                        dropdown.appendChild(option);
-                    });
-                    dropdown.style.display = 'block'; // Show dropdown
-                } else {
-                    document.getElementById('nepaliSuggestionsDropdown').style.display = 'none'; // Hide dropdown if no suggestions
-                }
-            } else {
-                document.getElementById('nepaliSuggestionsDropdown').style.display = 'none'; // Hide dropdown if Nepali mode is not enabled
+        const nepaliSuggestions = await fetchNepaliSuggestions(text);
+        if (nepaliSuggestions && nepaliSuggestions.length > 0) {
+            const dropdown = document.getElementById('nepaliSuggestionsDropdown');
+            dropdown.innerHTML = ''; // Clear previous suggestions
+            nepaliSuggestions.forEach(suggestion => {
+                const option = document.createElement('div');
+                option.classList.add('dropdown-item');
+                option.textContent = suggestion;
+                option.onclick = () => {
+                    document.getElementById('message').value = suggestion;
+                    hideNepaliSuggestions();
+                };
+                dropdown.appendChild(option);
+            });
+            dropdown.style.display = 'block'; // Show dropdown
+        } else {
+            document.getElementById('nepaliSuggestionsDropdown').style.display = 'none'; // Hide dropdown if no suggestions
         }
+    } else {
+        document.getElementById('nepaliSuggestionsDropdown').style.display = 'none'; // Hide dropdown if Nepali mode is not enabled
+    }
     }
 
     function displayRecommendations(recommendations) {
-    const dropdown = document.getElementById('recommendations');
-    dropdown.innerHTML = '';
+        const dropdown = document.getElementById('recommendations');
+        dropdown.innerHTML = '';
 
-    recommendations.forEach(word => {
-        const option = document.createElement('div');
-        option.classList.add('dropdown-item');
-        option.textContent = word;
-        option.onclick = () => {
-            document.getElementById('message').value = word;
-            hideRecommendations();
-        };
-        dropdown.appendChild(option);
-    });
+        recommendations.forEach(word => {
+            const words = word.split(',');
+            words.forEach(w => {
+                const option = document.createElement('div');
+                option.classList.add('dropdown-item');
+                option.textContent = w;
+                option.onclick = () => {
+                    document.getElementById('message').value = w;
+                    hideRecommendations();
+                };
+                dropdown.appendChild(option);
+            });
+        });
 
-    dropdown.style.display = 'block';
-}
-
-async function fetchNepaliSuggestions(input) {
-    const url = `https://inputtools.google.com/request?text=${input}&itc=ne-t-i0-und&num=13&cp=0&cs=1&ie=utf-8&oe=utf-8`;
-
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        if (data && data.length > 1 && data[1].length > 0) {
-            return data[1];
-        }
-    } catch (error) {
-        console.error('Error fetching Nepali suggestions:', error);
+        dropdown.style.display = 'block';
     }
-    return [];
-}
+
+
+    async function fetchNepaliSuggestions(input) {
+        const url = `https://inputtools.google.com/request?text=${input}&itc=ne-t-i0-und&num=13&cp=0&cs=1&ie=utf-8&oe=utf-8`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data && data.length > 1 && data[1].length > 0) {
+                // Access the array containing the suggestions
+                const suggestionsArray = data[1][0][1];
+
+                return suggestionsArray; // Return all suggestions
+            }
+        } catch (error) {
+            console.error('Error fetching Nepali suggestions:', error);
+        }
+        return [];
+    }
+
+
 
 
     function hideRecommendations() {
         document.getElementById('recommendations').innerHTML = ''; // Clear the recommendations
         document.getElementById('recommendations').style.display = 'none';
     }
-
-
 
     function selectSuggestion(suggestion) {
         document.getElementById('message').value = suggestion;
@@ -249,18 +257,17 @@ async function fetchNepaliSuggestions(input) {
 <style>
     #recommendations {
     position: absolute;
-    top: 100%; /* Position the recommendations box below the input */
+    top: 100%;
     left: 0;
     background-color: #fff;
     border: 1px solid #ccc;
-    max-height: 200px; /* Limit the maximum height of the recommendations box */
-    overflow-y: auto; /* Add vertical scrollbar if needed */
-    z-index: 999; /* Ensure the recommendations box is above other elements */
+    max-height: 200px;
+    z-index: 999;
 }
 
 </style>
 
-{{-- {{$messages->links("pagination::bootstrap-4")}} --}}
+
 <script>
     $(document).ready(function() {
     $('#example').DataTable();
