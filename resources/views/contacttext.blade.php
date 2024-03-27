@@ -1,16 +1,3 @@
-{{-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Royce Bulk SMS</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css"/>
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" > </script>
-</head>
-<body> --}}
 
     @extends('base')
 
@@ -38,9 +25,10 @@
 
             <div>
                 <label>Message</label>
-                <input type="text" class="form-control" name="message" id="message" oninput="updateInfo(this.value)">
-                <div id="recommendations" class="dropdown-menu" style="display: none;"></div>
-                <div id="nepaliSuggestionsDropdown" class="dropdown-menu" style="display: none;"></div>
+                <div style="position: relative;">
+                    <input type="text" class="form-control" name="message" id="message" oninput="updateInfo(this.value)">
+                    <div id="nepaliSuggestionsDropdown" class="dropdown-menu" style="position: absolute; top: 100%; left: 0; display: none;"></div>
+                </div>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="nepaliCheckbox" onchange="toggleNepaliMode()">
                     <label class="form-check-label" for="nepaliCheckbox">
@@ -48,6 +36,7 @@
                     </label>
                 </div>
             </div>
+
             <div>
                 <label>Include Salutation?</label>
                 <div>
@@ -96,10 +85,6 @@
             document.getElementById('message').focus();
             hideRecommendations();
         }
-
-
-
-
 
         function updateNumbers() {
             var selectedNumbers = document.querySelectorAll('input[name="selected_phone_number[]"]:checked');
@@ -157,24 +142,27 @@
             if (nepaliMode) {
         const nepaliSuggestions = await fetchNepaliSuggestions(text);
         if (nepaliSuggestions && nepaliSuggestions.length > 0) {
+
             const dropdown = document.getElementById('nepaliSuggestionsDropdown');
-            dropdown.innerHTML = ''; // Clear previous suggestions
+            dropdown.innerHTML = '';
             nepaliSuggestions.forEach(suggestion => {
                 const option = document.createElement('div');
                 option.classList.add('dropdown-item');
                 option.textContent = suggestion;
                 option.onclick = () => {
                     document.getElementById('message').value = suggestion;
-                    hideNepaliSuggestions();
+                    hideRecommendations();
+
                 };
+
                 dropdown.appendChild(option);
             });
-            dropdown.style.display = 'block'; // Show dropdown
+            dropdown.style.display = 'block';
         } else {
-            document.getElementById('nepaliSuggestionsDropdown').style.display = 'none'; // Hide dropdown if no suggestions
+            document.getElementById('nepaliSuggestionsDropdown').style.display = 'none';
         }
     } else {
-        document.getElementById('nepaliSuggestionsDropdown').style.display = 'none'; // Hide dropdown if Nepali mode is not enabled
+        document.getElementById('nepaliSuggestionsDropdown').style.display = 'none';
     }
     }
 
@@ -190,14 +178,19 @@
                 option.textContent = w;
                 option.onclick = () => {
                     document.getElementById('message').value = w;
-                    hideRecommendations();
+                    hideRecommendations(); // Hide the recommendation dropdown
+                    document.getElementById('nepaliSuggestionsDropdown').style.display = 'none'; // Hide the dropdown
                 };
+
+
                 dropdown.appendChild(option);
             });
         });
 
         dropdown.style.display = 'block';
     }
+
+
 
 
     async function fetchNepaliSuggestions(input) {
@@ -220,14 +213,14 @@
     }
 
 
-
-
     function hideRecommendations() {
-        document.getElementById('recommendations').innerHTML = ''; // Clear the recommendations
-        document.getElementById('recommendations').style.display = 'none';
+        document.getElementById('nepaliSuggestionsDropdown').innerHTML = '';
+        document.getElementById('nepaliSuggestionsDropdown').style.display = 'none';
     }
 
+
     function selectSuggestion(suggestion) {
+        console.log("Selected suggestion:", suggestion);
         document.getElementById('message').value = suggestion;
         hideRecommendations();
     }
@@ -244,25 +237,16 @@
     }
 </script>
 
-{{-- <style>
-    .dropdown-item {
-        cursor: pointer;
-        padding: 5px;
-        border-bottom: 1px solid #ddd;
-        display: block; /* Display each recommendation on a new line */
-    }
-
-</style> --}}
 
 <style>
-    #recommendations {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: #fff;
+    .dropdown-menu {
+    background-color: white;
     border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     max-height: 200px;
-    z-index: 999;
+    overflow-y: auto;
+    z-index: 999; /* Ensure the dropdown is above other elements */
 }
 
 </style>
