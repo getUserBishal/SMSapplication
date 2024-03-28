@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use RoyceLtd\LaravelBulkSMS\Facades\RoyceBulkSMS;
 use Ixudra\Curl\Facades\Curl;
+use PHPUnit\Framework\Attributes\Group;
 
 class HomeController extends Controller
 {
@@ -30,6 +31,13 @@ class HomeController extends Controller
     public function index()
     {
         return view('home');
+    }
+
+    public function message_dashboard()
+    {
+        $contacts = Contact::all();
+        $groups = ContactGroup::all();
+        return view('message_dashboard', compact('contacts'), compact('groups'));
     }
 
     public function messages()

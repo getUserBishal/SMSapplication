@@ -1,6 +1,3 @@
-    @extends('base')
-
-    @section('content')
 
     <div class="row">
         <div class="col-sm-12 text-center">
@@ -24,7 +21,7 @@
 
             <div>
                 <label>Phone Numbers</label>
-                <select id="phoneNumbersDropdown" class="form-control" onchange="updateSelectedNumber()">
+                <select id="phoneNumbersDropdown" class="form-control" onchange="single_updateSelectedNumber()">
                     <option value="">Select a number</option>
                     @foreach ($contacts as $item)
                         <option value="{{ $item->phone_number }}">{{ $item->phone_number }}</option>
@@ -37,11 +34,11 @@
             <div>
                 <label>Message</label>
                 <div style="position: relative;">
-                    <input type="text" class="form-control" name="message" id="message" oninput="updateInfo(this.value)">
+                    <input type="text" class="form-control" name="message" id="message" oninput="single_updateInfo(this.value)">
                     <div id="nepaliSuggestionsDropdown" class="dropdown-menu" style="position: absolute; top: 100%; left: 0; display: none;"></div>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="nepaliCheckbox" onchange="toggleNepaliMode()">
+                    <input class="form-check-input" type="checkbox" id="nepaliCheckbox" onchange="single_toggleNepaliMode()">
                     <label class="form-check-label" for="nepaliCheckbox">
                         Nepali
                     </label>
@@ -76,21 +73,21 @@
             let nepaliMode = false;
             let selectedNumbers = [];
 
-            function toggleNepaliMode() {
+            function single_toggleNepaliMode() {
                 nepaliMode = !nepaliMode;
                 document.getElementById('message').value = '';
                 document.getElementById('message').focus();
-                hideRecommendations();
+                single_hideRecommendations();
             }
 
-            function updateNumbers() {
-                var ntCount = selectedNumbers.filter(num => getOperatorType(num) === 'NTC').length;
-                var ncCount = selectedNumbers.filter(num => getOperatorType(num) === 'NCELL').length;
+            function single_updateNumbers() {
+                var ntCount = selectedNumbers.filter(num => single_getOperatorType(num) === 'NTC').length;
+                var ncCount = selectedNumbers.filter(num => single_getOperatorType(num) === 'NCELL').length;
 
                 document.getElementById('numInfo').innerText = `Numbers: ${selectedNumbers.length} (NT ${ntCount} NC ${ncCount})`;
             }
 
-            function getOperatorType(mobil) {
+            function single_getOperatorType(mobil) {
                 let mobile = mobil.trim();
                 let ntc_regex = /9[78][456][0-9]{7}/;
                 let ncel_regex = /98[012][0-9]{7}/;
@@ -104,7 +101,7 @@
                 }
             }
 
-            async function updateInfo(text) {
+            async function single_updateInfo(text) {
                 let charCount = text.length;
                 let remainingChars = charCount;
                 let smsCount = 0;
@@ -136,7 +133,7 @@
                 document.getElementById('totalCost').innerText = `Total Cost (${rate.toFixed(2)} + ${rate.toFixed(2)}): ${(totalRate).toFixed(2)}`;
 
                 if (nepaliMode) {
-                    const nepaliSuggestions = await fetchNepaliSuggestions(text);
+                    const nepaliSuggestions = await single_fetchNepaliSuggestions(text);
                     if (nepaliSuggestions && nepaliSuggestions.length > 0) {
                         const dropdown = document.getElementById('nepaliSuggestionsDropdown');
                         dropdown.innerHTML = '';
@@ -146,7 +143,7 @@
                             option.textContent = suggestion;
                             option.onclick = () => {
                                 document.getElementById('message').value = suggestion;
-                                hideRecommendations();
+                                single_hideRecommendations();
                             };
                             dropdown.appendChild(option);
                         });
@@ -159,7 +156,7 @@
                 }
             }
 
-            async function fetchNepaliSuggestions(input) {
+            async function single_fetchNepaliSuggestions(input) {
                 const url = `https://inputtools.google.com/request?text=${input}&itc=ne-t-i0-und&num=13&cp=0&cs=1&ie=utf-8&oe=utf-8`;
 
                 try {
@@ -176,22 +173,22 @@
                 return [];
             }
 
-            function hideRecommendations() {
+            function single_hideRecommendations() {
                 document.getElementById('nepaliSuggestionsDropdown').innerHTML = '';
                 document.getElementById('nepaliSuggestionsDropdown').style.display = 'none';
             }
 
-            function selectNumber(phoneNumber) {
+            function single_selectNumber(phoneNumber) {
                 selectedNumbers.push(phoneNumber);
-                updateNumbers();
+                single_updateNumbers();
                 document.getElementById('selectedNumbersInput').value = selectedNumbers.join(', ');
             }
 
-            function updateSelectedNumber() {
+            function single_updateSelectedNumber() {
                 const selectedNumber = document.getElementById('phoneNumbersDropdown').value;
                 if (!selectedNumbers.includes(selectedNumber)) {
                     selectedNumbers.push(selectedNumber);
-                    updateNumbers();
+                    single_updateNumbers();
                     document.getElementById('selectedNumbersInput').value = selectedNumbers.join(', ');
                 } else {
                     console.log('Number already selected:', selectedNumber);
@@ -199,22 +196,22 @@
             }
 
 
-            function addManualNumber() {
+            function single_addManualNumber() {
                 const enteredNumber = document.getElementById('manualPhoneNumber').value.trim();
                 if (enteredNumber !== '') {
-                    selectNumber(enteredNumber);
+                    single_selectNumber(enteredNumber);
                     document.getElementById('manualPhoneNumber').value = '';
                 }
             }
 
-            function selectAll() {
+            function single_selectAll() {
                 var checkboxes = document.getElementsByName('selected_phone_number[]');
                 var checkAll = document.getElementById('checkAll');
 
                 for (var i = 0; i < checkboxes.length; i++) {
                     checkboxes[i].checked = checkAll.checked;
                     if (checkAll.checked) {
-                        selectNumber(checkboxes[i].value);
+                        single_selectNumber(checkboxes[i].value);
                     } else {
                         const index = selectedNumbers.indexOf(checkboxes[i].value);
                         if (index > -1) {
@@ -223,21 +220,21 @@
                     }
                 }
 
-                updateNumbers();
+                single_updateNumbers();
                 document.getElementById('selectedNumbersInput').value = selectedNumbers.join(', ');
             }
 
         </script>
 
 <style>
-    .dropdown-menu {
+    .single-dropdown-menu {
     background-color: white;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     max-height: 200px;
     overflow-y: auto;
-    z-index: 999; /* Ensure the dropdown is above other elements */
+    z-index: 999;
 }
 
 </style>
@@ -252,6 +249,3 @@ $(document).ready(function() {
 });
 </script>
 
- @endsection
-{{-- </body>
-</html> --}}
