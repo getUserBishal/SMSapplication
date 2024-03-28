@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="alert alert-secondary alert-dismissible fade show" role="alert">
-                Click on salutation for custom message
+                Click on salutation for custom single_message
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -27,18 +27,18 @@
                         <option value="{{ $item->phone_number }}">{{ $item->phone_number }}</option>
                     @endforeach
                 </select>
-                <input type="hidden" id="selectedNumbersInput" name="selected_phone_number[]" value="">
+                <input type="hidden" id="single_selectedNumbersInput" name="selected_phone_number[]" value="">
 
             </div>
 
             <div>
-                <label>Message</label>
+                <label>single_message</label>
                 <div style="position: relative;">
-                    <input type="text" class="form-control" name="message" id="message" oninput="single_updateInfo(this.value)">
+                    <input type="text" class="form-control" name="single_message" id="single_message" oninput="single_updateInfo(this.value)">
                     <div id="nepaliSuggestionsDropdown" class="dropdown-menu" style="position: absolute; top: 100%; left: 0; display: none;"></div>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="nepaliCheckbox" onchange="single_toggleNepaliMode()">
+                    <input class="form-check-input" type="checkbox" id="nepaliCheckbox" onchange="single_togglesingle_nepaliMode()">
                     <label class="form-check-label" for="nepaliCheckbox">
                         Nepali
                     </label>
@@ -55,9 +55,9 @@
 
             <div id="infoContainer" style="background-color: rgb(225, 220, 220); padding: 20px; max-width: 600px; margin: 20px auto;">
                 <p id="charCount">Characters: 0 / 160</p>
-                <p id="smsCount">SMS Count: 0</p>
+                <p id="single_smsCount">SMS Count: 0</p>
                 <p id="numInfo">Numbers: 0 (NT 0 NC 0)</p>
-                <p id="rateInfo">Rate: NT 0.2 NC 0.2</p>
+                <p id="single_rateInfo">single_rate: NT 0.2 NC 0.2</p>
                 <p id="totalCost">Total Cost (0.00 + 0.00 +): 0.00</p>
             </div>
 
@@ -67,24 +67,24 @@
         </form>
 
         <script>
-            let rate = 0.2;
-            let totalRate = 0;
-            let smsCount = 0;
-            let nepaliMode = false;
-            let selectedNumbers = [];
+            let single_rate = 0.2;
+            let totalsingle_rate = 0;
+            let single_smsCount = 0;
+            let single_nepaliMode = false;
+            let single_selectedNumbers = [];
 
-            function single_toggleNepaliMode() {
-                nepaliMode = !nepaliMode;
-                document.getElementById('message').value = '';
-                document.getElementById('message').focus();
+            function single_togglesingle_nepaliMode() {
+                single_nepaliMode = !single_nepaliMode;
+                document.getElementById('single_message').value = '';
+                document.getElementById('single_message').focus();
                 single_hideRecommendations();
             }
 
             function single_updateNumbers() {
-                var ntCount = selectedNumbers.filter(num => single_getOperatorType(num) === 'NTC').length;
-                var ncCount = selectedNumbers.filter(num => single_getOperatorType(num) === 'NCELL').length;
+                var ntCount = single_selectedNumbers.filter(num => single_getOperatorType(num) === 'NTC').length;
+                var ncCount = single_selectedNumbers.filter(num => single_getOperatorType(num) === 'NCELL').length;
 
-                document.getElementById('numInfo').innerText = `Numbers: ${selectedNumbers.length} (NT ${ntCount} NC ${ncCount})`;
+                document.getElementById('numInfo').innerText = `Numbers: ${single_selectedNumbers.length} (NT ${ntCount} NC ${ncCount})`;
             }
 
             function single_getOperatorType(mobil) {
@@ -104,35 +104,35 @@
             async function single_updateInfo(text) {
                 let charCount = text.length;
                 let remainingChars = charCount;
-                let smsCount = 0;
+                let single_smsCount = 0;
 
                 if (charCount <= 160) {
-                    smsCount = 1;
+                    single_smsCount = 1;
                     remainingChars = 160 - charCount;
                 } else if (charCount <= 306) {
-                    smsCount = 2;
+                    single_smsCount = 2;
                     remainingChars = 306 - charCount;
                 } else if (charCount <= 459) {
-                    smsCount = 3;
+                    single_smsCount = 3;
                     remainingChars = 459 - charCount;
                 } else {
-                    smsCount = 3;
+                    single_smsCount = 3;
                     remainingChars = 152;
 
-                    while (charCount > (459 + (smsCount - 3) * 152)) {
-                        smsCount++;
-                        remainingChars = Math.abs(charCount - (459 + (smsCount - 3) * 152));
+                    while (charCount > (459 + (single_smsCount - 3) * 152)) {
+                        single_smsCount++;
+                        remainingChars = Math.abs(charCount - (459 + (single_smsCount - 3) * 152));
                     }
                 }
 
                 document.getElementById('charCount').innerText = `Characters: ${charCount} / ${remainingChars}`;
-                document.getElementById('smsCount').innerText = 'SMS Count: ' + smsCount;
-                document.getElementById('rateInfo').innerText = `Rate: NT ${rate} NC ${rate}`;
+                document.getElementById('single_smsCount').innerText = 'SMS Count: ' + single_smsCount;
+                document.getElementById('single_rateInfo').innerText = `single_rate: NT ${single_rate} NC ${single_rate}`;
 
-                var totalRate = smsCount * rate;
-                document.getElementById('totalCost').innerText = `Total Cost (${rate.toFixed(2)} + ${rate.toFixed(2)}): ${(totalRate).toFixed(2)}`;
+                var totalsingle_rate = single_smsCount * single_rate;
+                document.getElementById('totalCost').innerText = `Total Cost (${single_rate.toFixed(2)} + ${single_rate.toFixed(2)}): ${(totalsingle_rate).toFixed(2)}`;
 
-                if (nepaliMode) {
+                if (single_nepaliMode) {
                     const nepaliSuggestions = await single_fetchNepaliSuggestions(text);
                     if (nepaliSuggestions && nepaliSuggestions.length > 0) {
                         const dropdown = document.getElementById('nepaliSuggestionsDropdown');
@@ -142,7 +142,7 @@
                             option.classList.add('dropdown-item');
                             option.textContent = suggestion;
                             option.onclick = () => {
-                                document.getElementById('message').value = suggestion;
+                                document.getElementById('single_message').value = suggestion;
                                 single_hideRecommendations();
                             };
                             dropdown.appendChild(option);
@@ -179,17 +179,17 @@
             }
 
             function single_selectNumber(phoneNumber) {
-                selectedNumbers.push(phoneNumber);
+                single_selectedNumbers.push(phoneNumber);
                 single_updateNumbers();
-                document.getElementById('selectedNumbersInput').value = selectedNumbers.join(', ');
+                document.getElementById('single_selectedNumbersInput').value = single_selectedNumbers.join(', ');
             }
 
             function single_updateSelectedNumber() {
                 const selectedNumber = document.getElementById('phoneNumbersDropdown').value;
-                if (!selectedNumbers.includes(selectedNumber)) {
-                    selectedNumbers.push(selectedNumber);
+                if (!single_selectedNumbers.includes(selectedNumber)) {
+                    single_selectedNumbers.push(selectedNumber);
                     single_updateNumbers();
-                    document.getElementById('selectedNumbersInput').value = selectedNumbers.join(', ');
+                    document.getElementById('single_selectedNumbersInput').value = single_selectedNumbers.join(', ');
                 } else {
                     console.log('Number already selected:', selectedNumber);
                 }
@@ -213,15 +213,15 @@
                     if (checkAll.checked) {
                         single_selectNumber(checkboxes[i].value);
                     } else {
-                        const index = selectedNumbers.indexOf(checkboxes[i].value);
+                        const index = single_selectedNumbers.indexOf(checkboxes[i].value);
                         if (index > -1) {
-                            selectedNumbers.splice(index, 1);
+                            single_selectedNumbers.splice(index, 1);
                         }
                     }
                 }
 
                 single_updateNumbers();
-                document.getElementById('selectedNumbersInput').value = selectedNumbers.join(', ');
+                document.getElementById('single_selectedNumbersInput').value = single_selectedNumbers.join(', ');
             }
 
         </script>
@@ -239,13 +239,4 @@
 
 </style>
 
-<script>
-    $(document).ready(function() {
-    $('#example').DataTable();
-} );
-
-$(document).ready(function() {
-    $('.js-example-basic-multiple').select2();
-});
-</script>
 

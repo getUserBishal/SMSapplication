@@ -1,6 +1,3 @@
-{{-- @extends('base')
-
-@section('content') --}}
 
 <div class="row">
     <div class="col-sm-12 text-center">
@@ -46,7 +43,7 @@
                 <div id="nepaliSuggestionsDropdown" class="group-dropdown-menu" style="position: absolute; top: 100%; left: 0; display: none;"></div>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="nepaliCheckbox" onchange="group_toggleNepaliMode()">
+                <input class="form-check-input" type="checkbox" id="nepaliCheckbox" onchange="group_togglegroup_nepaliMode()">
                 <label class="form-check-label" for="nepaliCheckbox">
                     Nepali
                 </label>
@@ -63,9 +60,9 @@
 
         <div id="infoContainer" style="background-color: rgb(225, 220, 220); padding: 20px; max-width: 600px; margin: 20px auto;">
             <p id="charCount">Characters: 0 / 160</p>
-            <p id="smsCount">SMS Count: 0</p>
+            <p id="group_smsCount">SMS Count: 0</p>
             <p id="numInfo">Numbers: 0 (NT 0 NC 0)</p>
-            <p id="rateInfo">Rate: NT 0.2 NC 0.2</p>
+            <p id="group_rateInfo">group_rate: NT 0.2 NC 0.2</p>
             <p id="totalCost">Total Cost (0.00 + 0.00 +): 0.00</p>
         </div>
 
@@ -76,24 +73,24 @@
 </div>
 
 <script>
-    let rate = 0.2;
-    let totalRate = 0;
-    let smsCount = 0;
-    let nepaliMode = false;
-    let selectedNumbers = [];
+    let group_rate = 0.2;
+    let totalgroup_rate = 0;
+    let group_smsCount = 0;
+    let group_nepaliMode = false;
+    let group_selectedNumbers = [];
 
-    function group_toggleNepaliMode() {
-        nepaliMode = !nepaliMode;
+    function group_togglegroup_nepaliMode() {
+        group_nepaliMode = !group_nepaliMode;
         document.getElementById('message').value = '';
         document.getElementById('message').focus();
         group_hideRecommendations();
     }
 
     function group_updateNumbers() {
-        var ntCount = selectedNumbers.filter(num => group_getOperatorType(num) === 'NTC').length;
-        var ncCount = selectedNumbers.filter(num => group_getOperatorType(num) === 'NCELL').length;
+        var ntCount = group_selectedNumbers.filter(num => group_getOperatorType(num) === 'NTC').length;
+        var ncCount = group_selectedNumbers.filter(num => group_getOperatorType(num) === 'NCELL').length;
 
-        document.getElementById('numInfo').innerText = `Numbers: ${selectedNumbers.length} (NT ${ntCount} NC ${ncCount})`;
+        document.getElementById('numInfo').innerText = `Numbers: ${group_selectedNumbers.length} (NT ${ntCount} NC ${ncCount})`;
     }
 
     function group_getOperatorType(mobil) {
@@ -147,35 +144,35 @@
     async function group_updateInfo(text) {
         let charCount = text.length;
         let remainingChars = charCount;
-        let smsCount = 0;
+        let group_smsCount = 0;
 
         if (charCount <= 160) {
-            smsCount = 1;
+            group_smsCount = 1;
             remainingChars = 160 - charCount;
         } else if (charCount <= 306) {
-            smsCount = 2;
+            group_smsCount = 2;
             remainingChars = 306 - charCount;
         } else if (charCount <= 459) {
-            smsCount = 3;
+            group_smsCount = 3;
             remainingChars = 459 - charCount;
         } else {
-            smsCount = 3;
+            group_smsCount = 3;
             remainingChars = 152;
 
-            while (charCount > (459 + (smsCount - 3) * 152)) {
-                smsCount++;
-                remainingChars = Math.abs(charCount - (459 + (smsCount - 3) * 152));
+            while (charCount > (459 + (group_smsCount - 3) * 152)) {
+                group_smsCount++;
+                remainingChars = Math.abs(charCount - (459 + (group_smsCount - 3) * 152));
             }
         }
 
         document.getElementById('charCount').innerText = `Characters: ${charCount} / ${remainingChars}`;
-        document.getElementById('smsCount').innerText = 'SMS Count: ' + smsCount;
-        document.getElementById('rateInfo').innerText = `Rate: NT ${rate} NC ${rate}`;
+        document.getElementById('group_smsCount').innerText = 'SMS Count: ' + group_smsCount;
+        document.getElementById('group_rateInfo').innerText = `group_rate: NT ${group_rate} NC ${group_rate}`;
 
-        var totalRate = smsCount * rate;
-        document.getElementById('totalCost').innerText = `Total Cost (${rate.toFixed(2)} + ${rate.toFixed(2)}): ${(totalRate).toFixed(2)}`;
+        var totalgroup_rate = group_smsCount * group_rate;
+        document.getElementById('totalCost').innerText = `Total Cost (${group_rate.toFixed(2)} + ${group_rate.toFixed(2)}): ${(totalgroup_rate).toFixed(2)}`;
 
-        if (nepaliMode) {
+        if (group_nepaliMode) {
             const nepaliSuggestions = await group_fetchNepaliSuggestions(text);
             if (nepaliSuggestions && nepaliSuggestions.length > 0) {
                 const dropdown = document.getElementById('nepaliSuggestionsDropdown');
@@ -222,17 +219,17 @@
     }
 
     function group_selectNumber(phoneNumber) {
-        selectedNumbers.push(phoneNumber);
+        group_selectedNumbers.push(phoneNumber);
         group_updateNumbers();
-        document.getElementById('selectedNumbersInput').value = selectedNumbers.join(', ');
+        document.getElementById('group_selectedNumbersInput').value = group_selectedNumbers.join(', ');
     }
 
     function group_updateSelectedNumber() {
         const selectedNumber = document.getElementById('phoneNumbersDropdown').value;
-        if (!selectedNumbers.includes(selectedNumber)) {
-            selectedNumbers.push(selectedNumber);
+        if (!group_selectedNumbers.includes(selectedNumber)) {
+            group_selectedNumbers.push(selectedNumber);
             group_updateNumbers();
-            document.getElementById('selectedNumbersInput').value = selectedNumbers.join(', ');
+            document.getElementById('group_selectedNumbersInput').value = group_selectedNumbers.join(', ');
         } else {
             console.log('Number already selected:', selectedNumber);
         }
@@ -247,15 +244,15 @@
             if (checkAll.checked) {
                 group_selectNumber(checkboxes[i].value);
             } else {
-                const index = selectedNumbers.indexOf(checkboxes[i].value);
+                const index = group_selectedNumbers.indexOf(checkboxes[i].value);
                 if (index > -1) {
-                    selectedNumbers.splice(index, 1);
+                    group_selectedNumbers.splice(index, 1);
                 }
             }
         }
 
         group_updateNumbers();
-        document.getElementById('selectedNumbersInput').value = selectedNumbers.join(', ');
+        document.getElementById('group_selectedNumbersInput').value = group_selectedNumbers.join(', ');
     }
 
 </script>
@@ -268,9 +265,8 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     max-height: 200px;
     overflow-y: auto;
-    z-index: 999; /* Ensure the dropdown is above other elements */
+    z-index: 999;
 }
 
 </style>
 
-{{-- @endsection --}}
