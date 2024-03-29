@@ -7,18 +7,20 @@
         <meta name="author" content="" />
         <title>Sociar SMS</title>
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css"/>
 
     </head>
     <body>
+        <!-- Responsive navbar-->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
                 <a class="navbar-brand" href="{{url('dashboard')}}">Sociar SMS</a>
+                {{-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button> --}}
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li class="nav-item"><a class="nav-link active" aria-current="page" href="{{url('dashboard')}}">Outbox</a></li>
+                        {{-- <li class="nav-item"><a class="nav-link" href="#">Link</a></li> --}}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Send SMS</a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
@@ -45,6 +47,7 @@
                 </div>
             </div>
         </nav>
+        <!-- Page content-->
         <div class="container">
             <div class="text-center mt-5">
 
@@ -64,6 +67,7 @@
                         @endif
                     </div>
                 </div>
+                {{-- @include('sidebar') --}}
                 @yield('content')
             </div>
         </div>
@@ -73,17 +77,6 @@
     <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" > </script>
 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-        <!-- Core theme JS-->
-        {{-- <script src="js/scripts.js"></script> --}}
-        {{-- <script>
-    $(document).ready(function() {
-    $('#example').DataTable(
-        {
-  "pageLength": 50
-}
-    );
-} );
-</script> --}}
 
 <script>
     $("#checkAll").click(function(){

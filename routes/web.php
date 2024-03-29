@@ -18,6 +18,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', [HomeController::class, 'messages']);
     Route::get('/', [HomeController::class, 'messages']);
     Route::get('/message_dashboard', [HomeController::class, 'message_dashboard'])->name('message_dashboard');
+    Route::get('/sidebar', [HomeController::class, 'sidebar'])->name('sidebar');
 
     Route::get('base', [HomeController::class, 'base']);
     Route::post('deliveryreport', [HomeController::class, 'deliveryReport']);

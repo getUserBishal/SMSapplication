@@ -40,6 +40,13 @@ class HomeController extends Controller
         return view('message_dashboard', compact('contacts'), compact('groups'));
     }
 
+    public function sidebar()
+    {
+        $contacts = Contact::all();
+        $groups = ContactGroup::all();
+        return view('sidebar', compact('contacts'), compact('groups'));
+    }
+
     public function messages()
     {
         $messages = SentTextMessage::orderBy('id', 'desc')->paginate(50);

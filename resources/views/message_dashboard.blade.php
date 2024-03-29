@@ -18,7 +18,7 @@
     </style>
 </head>
 <body>
-    @include('base')
+    {{-- @include() --}}
     <div class="dashboard">
         <div class="section">
             @if (!isset($includedGroup))
