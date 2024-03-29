@@ -30,12 +30,6 @@
             </select>
         </div>
 
-{{--
-        <div class="form-group" id="groupNumbersField">
-            <label for="groupNumbers">Numbers in the selected group:</label>
-            <input type="text" class="form-control" id="groupNumbers" readonly>
-        </div> --}}
-
         <div class="form-group">
             <label>Message</label>
             <textarea class="form-control" name="message" id="message" rows="1" required oninput="group_updateInfo(this.value)"></textarea>
@@ -138,7 +132,7 @@
     function group_displayGroupNumbers(numbers) {
         const numbersInput = document.getElementById('groupNumbers');
         numbersInput.value = numbers.join(', ');
-        document.getElementById('groupNumbersField').style.display = 'block'; // Display the input field container
+        document.getElementById('groupNumbersField').style.display = 'block';
     }
 
     async function group_updateInfo(text) {
