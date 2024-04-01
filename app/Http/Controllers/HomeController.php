@@ -40,11 +40,11 @@ class HomeController extends Controller
         return view('message_dashboard', compact('contacts'), compact('groups'));
     }
 
-    public function sidebar()
+    public function landing()
     {
         $contacts = Contact::all();
         $groups = ContactGroup::all();
-        return view('sidebar', compact('contacts'), compact('groups'));
+        return view('landing', compact('contacts'), compact('groups'));
     }
 
     public function messages()

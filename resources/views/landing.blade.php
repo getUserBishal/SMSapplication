@@ -39,7 +39,7 @@
         .navbar {
             width: 250px;
             background-color: #343a40;
-            min-height: 100%; 
+            min-height: 100%;
             position: fixed;
             top: 0;
             left: 0;
@@ -84,14 +84,14 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="{{url('dashboard')}}">Outbox</a>
                     </li>
-                    <li class="nav-item dropdown">
+                    {{-- <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="sendSMSDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Send SMS</a>
                         <div class="dropdown-menu" aria-labelledby="sendSMSDropdown">
                             <a class="dropdown-item" href="{{url('single-text')}}">Bulk SMS</a>
                             <a class="dropdown-item" href="{{url('contacts-text')}}">Single SMS</a>
                             <a class="dropdown-item" href="{{url('group-text')}}">Group SMS</a>
                         </div>
-                    </li>
+                    </li> --}}
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="sendToDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Contacts</a>
@@ -128,7 +128,9 @@
                     </div>
 
                 </div>
-                @yield('content')
+                <h1 style="background-color: #495057">Sociar SMS</h1>
+                {{-- @yield('content') --}}
+
                 @include('message_dashboard')
             </div>
         </main>
