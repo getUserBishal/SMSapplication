@@ -30,7 +30,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        return view('landing');
     }
 
     public function message_dashboard()
@@ -162,7 +162,7 @@ class HomeController extends Controller
         // dd($phone_number);
 
         foreach($phone_number as $phone){
-             RoyceBulkSMS::sendSMS($phone, $request->message);
+            //  RoyceBulkSMS::sendSMS($phone, $request->message);
 
         }
         return redirect('dashboard')->with('status','SMS sent successfully');
@@ -239,7 +239,7 @@ class HomeController extends Controller
             }
 
 
-            RoyceBulkSMS::sendSMS($contact->phone_number,$message );
+            // RoyceBulkSMS::sendSMS($contact->phone_number,$message );
 
             }
 

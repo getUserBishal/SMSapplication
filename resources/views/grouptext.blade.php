@@ -250,7 +250,6 @@
     }
 
 </script>
-
 <style>
 .group-dropdown-menu {
     background-color: white;
@@ -261,6 +260,5 @@
     overflow-y: auto;
     z-index: 999;
 }
-
 </style>
 

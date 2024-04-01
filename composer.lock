@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c8c990eee2994b2c9deb050e87a5160b",
+    "content-hash": "c63e81fd2b4e54972f0873bca5cb9611",
     "packages": [
         {
             "name": "brick/math",
@@ -3298,64 +3298,6 @@
                 }
             ],
             "time": "2023-11-08T05:53:05+00:00"
-        },
-        {
-            "name": "royceltd/laravel-bulksms",
-            "version": "1.5.7",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/royceltd/laravel-bulksms.git",
-                "reference": "57cde3ae76841b5e88e511527975753783d97808"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/royceltd/laravel-bulksms/zipball/57cde3ae76841b5e88e511527975753783d97808",
-                "reference": "57cde3ae76841b5e88e511527975753783d97808",
-                "shasum": ""
-            },
-            "require": {
-                "ixudra/curl": "6.*"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "RoyceLtd\\LaravelBulkSMS\\LaravelBulkSMSServiceProvider"
-                    ],
-                    "aliases": {
-                        "RoyceBulkSMS": "RoyceLtd\\LaravelBulkSMS\\Facades\\LaravelBulkSMSFacade"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "RoyceLtd\\LaravelBulkSMS\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Royce Technologies Ltd",
-                    "email": "developer@roycetechnologies.co.ke",
-                    "homepage": "https://roycetechnologies.co.ke"
-                }
-            ],
-            "description": "Easily integrate bulk SMS into laravel app",
-            "homepage": "https://github.com/royceltd/laravel-bulksms",
-            "keywords": [
-                "Bulksms kenya",
-                "bulk sms",
-                "laravel",
-                "laravel bulksms"
-            ],
-            "support": {
-                "issues": "https://github.com/royceltd/laravel-bulksms/issues",
-                "source": "https://github.com/royceltd/laravel-bulksms/tree/1.5.7"
-            },
-            "time": "2023-04-16T07:35:13+00:00"
         },
         {
             "name": "symfony/clock",

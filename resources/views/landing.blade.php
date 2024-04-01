@@ -65,7 +65,6 @@
     </style>
 </head>
 <body>
-
     <!-- Bootstrap core JS-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
@@ -84,14 +83,7 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="{{url('dashboard')}}">Outbox</a>
                     </li>
-                    {{-- <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="sendSMSDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Send SMS</a>
-                        <div class="dropdown-menu" aria-labelledby="sendSMSDropdown">
-                            <a class="dropdown-item" href="{{url('single-text')}}">Bulk SMS</a>
-                            <a class="dropdown-item" href="{{url('contacts-text')}}">Single SMS</a>
-                            <a class="dropdown-item" href="{{url('group-text')}}">Group SMS</a>
-                        </div>
-                    </li> --}}
+                      
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="sendToDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Contacts</a>
@@ -128,7 +120,8 @@
                     </div>
 
                 </div>
-                <h1 style="background-color: #495057">Sociar SMS</h1>
+                <h1 style="background-color: #495057; color: white;">Sociar SMS</h1>
+
                 {{-- @yield('content') --}}
 
                 @include('message_dashboard')

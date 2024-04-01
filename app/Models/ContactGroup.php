@@ -9,6 +9,12 @@ class ContactGroup extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'description',
+    ];
+
+
     public function contacts()
     {
         return $this->hasMany(Contact::class,'group_id');

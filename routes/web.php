@@ -11,7 +11,7 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/landing', [HomeController::class, 'index'])->name('landing');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('royceroute', [HomeController::class, 'index']);
