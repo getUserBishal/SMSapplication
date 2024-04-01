@@ -46,7 +46,7 @@
         }
         .main-content {
             margin-left: 250px;
-            padding: 20px;
+            padding: 0px;
         }
         .sidebar .nav-link {
             color: #fff;
@@ -83,7 +83,7 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="{{url('dashboard')}}">Outbox</a>
                     </li>
-                      
+
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="sendToDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Contacts</a>
@@ -120,10 +120,7 @@
                     </div>
 
                 </div>
-                <h1 style="background-color: #495057; color: white;">Sociar SMS</h1>
-
-                {{-- @yield('content') --}}
-
+                <h1 style="background-color: #343a40;color: white;margin-top: -48px;">Sociar SMS</h1>
                 @include('message_dashboard')
             </div>
         </main>

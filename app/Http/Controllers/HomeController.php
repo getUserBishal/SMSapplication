@@ -198,16 +198,13 @@ class HomeController extends Controller
         curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-        // Execute cURL request
         $response = curl_exec($ch);
         $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         if ($status_code == 200) {
-            // SMS sent successfully
             return redirect('dashboard')->with('status', 'SMS sent successfully');
         } else {
-            // Failed to send SMS
             return redirect('dashboard')->with('error', 'Failed to send SMS');
         }
     }
@@ -239,7 +236,6 @@ class HomeController extends Controller
             }
 
 
-            // RoyceBulkSMS::sendSMS($contact->phone_number,$message );
 
             }
 

@@ -1,4 +1,3 @@
-
 <div class="row">
     <div class="col-sm-12 text-center">
         <h4>Group SMS</h4>
@@ -101,33 +100,42 @@
         }
     }
     function group_fetchGroupNumbers() {
-        const selectedGroup = document.getElementById('groupSelect').value;
-        if (selectedGroup !== "") {
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', `/fetch-group-numbers?group=${selectedGroup}`, true);
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    try {
-                        const numbers = JSON.parse(xhr.responseText);
-                        document.getElementById('groupNumbers').value = numbers.join(', ');
-                        document.getElementById('groupNumbersField').style.display = 'block';
-                    } catch (error) {
-                        console.error('Error parsing JSON response:', error);
-                    }
-                } else {
-                    console.error('Request failed with status:', xhr.statusText);
-                }
-            };
-            xhr.onerror = function() {
-                console.error('Network error occurred.');
-            };
-            xhr.send();
-        } else {
-            document.getElementById('groupNumbers').value = '';
-            document.getElementById('groupNumbersField').style.display = 'none';
-        }
-    }
+    const selectedGroup = document.getElementById('groupSelect').value;
+    const groupNumbersInput = document.getElementById('groupNumbers');
+    const groupNumbersField = document.getElementById('groupNumbersField');
 
+    if (selectedGroup) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', `/fetch-group-numbers?group=${encodeURIComponent(selectedGroup)}`, true);
+        xhr.onload = function() {
+    if (xhr.status === 200) {
+        try {
+            const numbers = JSON.parse(xhr.responseText);
+            groupNumbersInput.value = numbers.join(', ');
+            groupNumbersField.style.display = 'block';
+        } catch (error) {
+            console.error('Error parsing JSON response:', error);
+            groupNumbersInput.value = 'Error retrieving numbers';
+            groupNumbersField.style.display = 'none';
+        }
+    } else {
+        console.error('Request failed with status:', xhr.statusText);
+        groupNumbersInput.value = 'Error retrieving numbers';
+        groupNumbersField.style.display = 'none';
+    }
+};
+xhr.onerror = function() {
+    console.error('Network error occurred.');
+    groupNumbersInput.value = 'Error retrieving numbers';
+    groupNumbersField.style.display = 'none';
+};
+
+        xhr.send();
+    } else {
+        groupNumbersInput.value = '';
+        groupNumbersField.style.display = 'none';
+    }
+}
 
     function group_displayGroupNumbers(numbers) {
         const numbersInput = document.getElementById('groupNumbers');

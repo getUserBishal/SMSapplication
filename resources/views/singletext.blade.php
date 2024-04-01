@@ -1,4 +1,3 @@
-
     <div class="row">
         <div class="col-sm-12">
             <h4>Bulk SMS</h4>
@@ -23,7 +22,7 @@
                     <label>bulk_message</label>
                     <div style="position: relative;">
                         <input type="text" class="form-control" name="bulk_message" id="bulk_message" oninput="bulk_updateInfo(this.value)">
-                        <div id="nepaliSuggestionsDropdown" class="bulk-dropdown-menu" style="position: absolute; top: 100%; left: 0; display: none;"></div>
+                        <div id="bulk_nepaliSuggestionsDropdown" class="bulk-dropdown-menu" style="position: absolute; top: 100%; left: 0; display: none;"></div>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="nepaliCheckbox" onchange="bulk_togglebulk_nepaliMode()">
@@ -35,11 +34,11 @@
             </div>
 
             <div id="infoContainer" style="background-color: rgb(225, 220, 220); padding: 20px; max-width: 600px; margin: 20px auto;">
-                <p id="charCount">Characters: 0 / 160</p>
+                <p id="bulk_charCount">Characters: 0 / 160</p>
                 <p id="bulk_smsCount">SMS Count: 0</p>
-                <p id="numInfo">Numbers: 0 (NT 0 NC 0)</p>
+                <p id="bulk_numInfo">Numbers: 0 (NT 0 NC 0)</p>
                 <p id="bulk_rateInfo">bulk_rate: NT 0.2 NC 0.2</p>
-                <p id="totalCost">Total Cost (0.00 + 0.00): 0.00</p>
+                <p id="bulk_totalCost">Total Cost (0.00 + 0.00): 0.00</p>
             </div>
             <div>
                 <div class="form-group">
@@ -48,7 +47,6 @@
             </div>
         </form>
     </div>
-
     <script>
         let bulk_rate = 0.2;
         let totalbulk_rate = 0;
@@ -76,7 +74,7 @@
                     ncCount++;
                 }
             });
-            document.getElementById('numInfo').innerText = `Numbers: ${allNumbers.length} (NT ${ntCount} NC ${ncCount})`;
+            document.getElementById('bulk_numInfo').innerText = `Numbers: ${allNumbers.length} (NT ${ntCount} NC ${ncCount})`;
         }
 
         function bulk_getOperatorType(mobil) {
@@ -115,38 +113,38 @@
             }
         }
         async function bulk_updateInfo(text) {
-            let charCount = text.length;
-                let remainingChars = charCount;
+            let bulk_charCount = text.length;
+                let remainingChars = bulk_charCount;
                 let bulk_smsCount = 0;
 
-            if (charCount <= 160) {
+            if (bulk_charCount <= 160) {
                 bulk_smsCount = 1;
-                remainingChars = 160 - charCount;
-            } else if (charCount <= 306) {
+                remainingChars = 160 - bulk_charCount;
+            } else if (bulk_charCount <= 306) {
                 bulk_smsCount = 2;
-                remainingChars = 306 - charCount;
-            } else if (charCount <= 459) {
+                remainingChars = 306 - bulk_charCount;
+            } else if (bulk_charCount <= 459) {
                 bulk_smsCount = 3;
-                remainingChars = 459 - charCount;
+                remainingChars = 459 - bulk_charCount;
             } else {
                 bulk_smsCount = 3;
                 remainingChars = 152;
-                while (charCount > (459 + (bulk_smsCount - 3) * 152)) {
+                while (bulk_charCount > (459 + (bulk_smsCount - 3) * 152)) {
                     bulk_smsCount++;
-                    remainingChars = Math.abs(charCount - (459 + (bulk_smsCount - 3) * 152));
+                    remainingChars = Math.abs(bulk_charCount - (459 + (bulk_smsCount - 3) * 152));
                 }
             }
-            document.getElementById('charCount').innerText = `Characters: ${charCount} / ${remainingChars}`;
+            document.getElementById('bulk_charCount').innerText = `Characters: ${bulk_charCount} / ${remainingChars}`;
             document.getElementById('bulk_smsCount').innerText = 'SMS Count: ' + bulk_smsCount;
             document.getElementById('bulk_rateInfo').innerText = `bulk_rate: NT ${bulk_rate} NC ${bulk_rate}`;
 
             var totalbulk_rate = bulk_smsCount * bulk_rate;
-            document.getElementById('totalCost').innerText = `Total Cost (${bulk_rate.toFixed(2)} + ${bulk_rate.toFixed(2)}): ${(totalbulk_rate).toFixed(2)}`;
+            document.getElementById('bulk_totalCost').innerText = `Total Cost (${bulk_rate.toFixed(2)} + ${bulk_rate.toFixed(2)}): ${(totalbulk_rate).toFixed(2)}`;
 
             if (bulk_nepaliMode) {
                 const nepaliSuggestions = await bulk_fetchNepaliSuggestions(text);
                 if (nepaliSuggestions && nepaliSuggestions.length > 0) {
-                    const dropdown = document.getElementById('nepaliSuggestionsDropdown');
+                    const dropdown = document.getElementById('bulk_nepaliSuggestionsDropdown');
                     dropdown.innerHTML = '';
                     nepaliSuggestions.forEach(suggestion => {
                         const option = document.createElement('div');
@@ -160,10 +158,10 @@
                     });
                     dropdown.style.display = 'block';
                 } else {
-                    document.getElementById('nepaliSuggestionsDropdown').style.display = 'none';
+                    document.getElementById('bulk_nepaliSuggestionsDropdown').style.display = 'none';
                 }
             } else {
-                document.getElementById('nepaliSuggestionsDropdown').style.display = 'none';
+                document.getElementById('bulk_nepaliSuggestionsDropdown').style.display = 'none';
             }
         }
 
@@ -186,8 +184,8 @@
         }
 
         function bulk_hideRecommendations() {
-            document.getElementById('nepaliSuggestionsDropdown').innerHTML = '';
-            document.getElementById('nepaliSuggestionsDropdown').style.display = 'none';
+            document.getElementById('bulk_nepaliSuggestionsDropdown').innerHTML = '';
+            document.getElementById('bulk_nepaliSuggestionsDropdown').style.display = 'none';
         }
 
         function bulk_selectNumber(phoneNumber) {

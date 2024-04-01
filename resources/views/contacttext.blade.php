@@ -1,4 +1,3 @@
-
     <div class="row">
         <div class="col-sm-12 text-center">
             <h4>Single SMS</h4>
@@ -35,7 +34,7 @@
                 <label>single_message</label>
                 <div style="position: relative;">
                     <input type="text" class="form-control" name="single_message" id="single_message" oninput="single_updateInfo(this.value)">
-                    <div id="nepaliSuggestionsDropdown" class="dropdown-menu" style="position: absolute; top: 100%; left: 0; display: none;"></div>
+                    <div id="single_nepaliSuggestionsDropdown" class="dropdown-menu" style="position: absolute; top: 100%; left: 0; display: none;"></div>
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="nepaliCheckbox" onchange="single_togglesingle_nepaliMode()">
@@ -54,11 +53,11 @@
             </div>
 
             <div id="infoContainer" style="background-color: rgb(225, 220, 220); padding: 20px; max-width: 600px; margin: 20px auto;">
-                <p id="charCount">Characters: 0 / 160</p>
+                <p id="single_charCount">Characters: 0 / 160</p>
                 <p id="single_smsCount">SMS Count: 0</p>
-                <p id="numInfo">Numbers: 0 (NT 0 NC 0)</p>
+                <p id="single_numInfo">Numbers: 0 (NT 0 NC 0)</p>
                 <p id="single_rateInfo">single_rate: NT 0.2 NC 0.2</p>
-                <p id="totalCost">Total Cost (0.00 + 0.00 +): 0.00</p>
+                <p id="single_totalCost">Total Cost (0.00 + 0.00 +): 0.00</p>
             </div>
 
             <div>
@@ -84,7 +83,7 @@
                 var ntCount = single_selectedNumbers.filter(num => single_getOperatorType(num) === 'NTC').length;
                 var ncCount = single_selectedNumbers.filter(num => single_getOperatorType(num) === 'NCELL').length;
 
-                document.getElementById('numInfo').innerText = `Numbers: ${single_selectedNumbers.length} (NT ${ntCount} NC ${ncCount})`;
+                document.getElementById('single_numInfo').innerText = `Numbers: ${single_selectedNumbers.length} (NT ${ntCount} NC ${ncCount})`;
             }
 
             function single_getOperatorType(mobil) {
@@ -102,40 +101,40 @@
             }
 
             async function single_updateInfo(text) {
-                let charCount = text.length;
-                let remainingChars = charCount;
+                let single_charCount = text.length;
+                let remainingChars = single_charCount;
                 let single_smsCount = 0;
 
-                if (charCount <= 160) {
+                if (single_charCount <= 160) {
                     single_smsCount = 1;
-                    remainingChars = 160 - charCount;
-                } else if (charCount <= 306) {
+                    remainingChars = 160 - single_charCount;
+                } else if (single_charCount <= 306) {
                     single_smsCount = 2;
-                    remainingChars = 306 - charCount;
-                } else if (charCount <= 459) {
+                    remainingChars = 306 - single_charCount;
+                } else if (single_charCount <= 459) {
                     single_smsCount = 3;
-                    remainingChars = 459 - charCount;
+                    remainingChars = 459 - single_charCount;
                 } else {
                     single_smsCount = 3;
                     remainingChars = 152;
 
-                    while (charCount > (459 + (single_smsCount - 3) * 152)) {
+                    while (single_charCount > (459 + (single_smsCount - 3) * 152)) {
                         single_smsCount++;
-                        remainingChars = Math.abs(charCount - (459 + (single_smsCount - 3) * 152));
+                        remainingChars = Math.abs(single_charCount - (459 + (single_smsCount - 3) * 152));
                     }
                 }
 
-                document.getElementById('charCount').innerText = `Characters: ${charCount} / ${remainingChars}`;
+                document.getElementById('single_charCount').innerText = `Characters: ${single_charCount} / ${remainingChars}`;
                 document.getElementById('single_smsCount').innerText = 'SMS Count: ' + single_smsCount;
                 document.getElementById('single_rateInfo').innerText = `single_rate: NT ${single_rate} NC ${single_rate}`;
 
                 var totalsingle_rate = single_smsCount * single_rate;
-                document.getElementById('totalCost').innerText = `Total Cost (${single_rate.toFixed(2)} + ${single_rate.toFixed(2)}): ${(totalsingle_rate).toFixed(2)}`;
+                document.getElementById('single_totalCost').innerText = `Total Cost (${single_rate.toFixed(2)} + ${single_rate.toFixed(2)}): ${(totalsingle_rate).toFixed(2)}`;
 
                 if (single_nepaliMode) {
                     const nepaliSuggestions = await single_fetchNepaliSuggestions(text);
                     if (nepaliSuggestions && nepaliSuggestions.length > 0) {
-                        const dropdown = document.getElementById('nepaliSuggestionsDropdown');
+                        const dropdown = document.getElementById('single_nepaliSuggestionsDropdown');
                         dropdown.innerHTML = '';
                         nepaliSuggestions.forEach(suggestion => {
                             const option = document.createElement('div');
@@ -149,10 +148,10 @@
                         });
                         dropdown.style.display = 'block';
                     } else {
-                        document.getElementById('nepaliSuggestionsDropdown').style.display = 'none';
+                        document.getElementById('single_nepaliSuggestionsDropdown').style.display = 'none';
                     }
                 } else {
-                    document.getElementById('nepaliSuggestionsDropdown').style.display = 'none';
+                    document.getElementById('single_nepaliSuggestionsDropdown').style.display = 'none';
                 }
             }
 
@@ -174,8 +173,8 @@
             }
 
             function single_hideRecommendations() {
-                document.getElementById('nepaliSuggestionsDropdown').innerHTML = '';
-                document.getElementById('nepaliSuggestionsDropdown').style.display = 'none';
+                document.getElementById('single_nepaliSuggestionsDropdown').innerHTML = '';
+                document.getElementById('single_nepaliSuggestionsDropdown').style.display = 'none';
             }
 
             function single_selectNumber(phoneNumber) {
