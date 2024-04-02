@@ -7,7 +7,6 @@ use App\Models\ContactGroup;
 use App\Models\SentTextMessage;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Ixudra\Curl\Facades\Curl;
 use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
@@ -160,41 +159,40 @@ class HomeController extends Controller
     }
 
     public function sendContactsText(Request $request) {
+
         $client = new Client();
 
-    try {
+        try {
 
-        if ($request->salutation == 'No') {
-            $message = "Hello $request->first_name, $request->message";
-        } else {
-            $message = $request->message;
+            $selectedPhoneNumbers = $request->selected_phone_number;
+            $message = $request->single_message;
+
+            foreach ($selectedPhoneNumbers as $phoneNumber) {
+                $response = $client->post('https://sms.sociair.com/api/sms', [
+                    'headers' => [
+                        'Authorization' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiZDJhYWY4MzU3MDQ2ODhhY2JlNjRhZmM0YmQzYmExODdjZjhiMGJlYTcxZTZiYzRmZTE3YmQ2ZTU2MzU0NDYyNDFmYWRkODZkMDhhODY3OWIiLCJpYXQiOjE3MTIwMzUzODcuODA3OTgsIm5iZiI6MTcxMjAzNTM4Ny44MDc5ODYsImV4cCI6MTc0MzU3MTM4Ny43ODA5OTcsInN1YiI6IjEyNTciLCJzY29wZXMiOltdfQ.eJS_NUDVvuTrheHlcd8t8Sronp6DMTd2FC5KAWZBOwzCLMAbxQdwlYNFgRshsea9CB-bC3O1ORIJ0_SdPc3n7LtyiNb1chqGBRqJ018HUxU2ljl8GbKKzGo_zNsr9UuRKp4oEw5t40dPXCgmpKwaxooHfwx75p9YjOU072wO6KhAYl-I0sl5WIIcyOJuqxZiBqT3nnTYaFzitpKU3sAX0NEXT4L5wbrZt-mDbyUatifWVBS3VpjdBfTDPz4yH6y_2NoiNwePVhnqIUba0YykPAbALQdvP5bfPkAi3GoxoTCsagUR-Dcvk40WNd1I_vRO2YAdzwr9-9Cl-UFzo8E9Y1EnxWIUeR5mXb5l6iGVQ5bHxqtpQsTU-9WvN-1w1dzebZAAqJ6QD0DR2tPCZ4ZEDnXZK6KDPV4gWsscaieR3hMiJ84ct0VfuUnp18yC1VmVTd9_1F-YOpCEdBtGCo7TSK1kxGkNQwq3FCIAEeatx1lsbP-e9nWrEEP3jZklgEohF_W8wvyY5hEzXVQY1qwh7Z47XVxtwE6eFG3QTdo4BRtp8ccMFqY9l5JZQXdxFOANsngqwcDFmt-DDzCwev-EcXtCSBscOOstjh7lk6IWCdWP5qqelHV7RR9QsgFwUazEZoKW33yjLNjCbQ0QN2jJEEHCAfRXjzr4gGbfmVN0V6M',
+                        'Content-Type' => 'application/json',
+                        'Accept' => 'application/json',
+                    ],
+                    'json' => [
+                        'message' => $message,
+                        'mobile' => $phoneNumber,
+                    ],
+                ]);
+
+                if ($response->getStatusCode() == 200) {
+                    $responseData = json_decode($response->getBody(), true);
+                    Log::info('SMS sent successfully to ' . $phoneNumber . ': ' . $responseData['message']);
+                } else {
+                    Log::error('Failed to send SMS to ' . $phoneNumber . ': ' . $response->getBody());
+                }
+            }
+
+            return redirect('landing')->with('status', 'SMS sent successfully');
+        } catch (\Exception $e) {
+            Log::error('Exception while sending SMS: ' . $e->getMessage());
+            return redirect('landing')->with('status', 'Failed to send SMS');
         }
-
-        $response = $client->post('https://sms.sociair.com/api/sms', [
-            'headers' => [
-                'Authorization' => 'Bearer your_bearer_token',
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-            ],
-            'json' => [
-                'message' => $message,
-                'mobile' => $request->phone_number,
-            ],
-        ]);
-
-        if ($response->getStatusCode() == 200) {
-
-            $responseData = json_decode($response->getBody(), true);
-
-            Log::info('SMS sent successfully: ' . $responseData['message']);
-        } else {
-            Log::error('Failed to send SMS: ' . $response->getBody());
-        }
-    } catch (\Exception $e) {
-        Log::error('Exception while sending SMS: ' . $e->getMessage());
-    }
-
-    return redirect('landing')->with('status', 'SMS sent successfully');
     }
 
 

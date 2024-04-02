@@ -21,15 +21,13 @@
             <div>
                 <label>Phone Numbers</label>
                 <input type="hidden" id="single_selectedNumbersInput" name="selected_phone_number[]" value="">
-                <select id="phoneNumbersDropdown" class="form-control" onchange="single_updateSelectedNumber(this)">
+
+                <select id="phoneNumbersDropdown" class="form-control" onchange="single_updateSelectedNumber()">
                     <option value="">Select a number</option>
                     @foreach ($contacts as $item)
                         <option value="{{ $item->phone_number }}">{{ $item->phone_number }}</option>
                     @endforeach
                 </select>
-                <input type="text" id="single_selectedNumbersInput" name="selected_phone_number" value="">
-
-
             </div>
 
             <div>
@@ -186,28 +184,9 @@
             }
 
             function single_updateSelectedNumber() {
-                dd($data);
-                const selectedNumber = document.getElementById('phoneNumbersDropdown').value;
-                if (!single_selectedNumbers.includes(selectedNumber)) {
-                    single_selectedNumbers.push(selectedNumber);
-                    single_updateNumbers();
-                } else {
-                    console.log('Number already selected:', selectedNumber);
-                }
-                document.getElementById('single_selectedNumbersInput').value = selectedNumber;
-            }
-
-            function single_updateSelectedNumber() {
                 const selectedNumber = document.getElementById('phoneNumbersDropdown').value;
                 document.getElementById('single_selectedNumbersInput').value = selectedNumber;
-                if (!single_selectedNumbers.includes(selectedNumber)) {
-                    single_selectedNumbers.push(selectedNumber);
-                    single_updateNumbers();
-                } else {
-                    console.log('Number already selected:', selectedNumber);
-                }
             }
-
 
 
             function single_addManualNumber() {
