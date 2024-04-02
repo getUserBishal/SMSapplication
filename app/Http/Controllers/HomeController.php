@@ -5,11 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Contact;
 use App\Models\ContactGroup;
 use App\Models\SentTextMessage;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use RoyceLtd\LaravelBulkSMS\Facades\RoyceBulkSMS;
 use Ixudra\Curl\Facades\Curl;
-use PHPUnit\Framework\Attributes\Group;
+use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 {
@@ -153,22 +152,6 @@ class HomeController extends Controller
         return view('singletext');
     }
 
-    public function sendSingleText(Request $request){
-        // $phone = "9843820568";
-        // $message= $request->message;
-
-        $phone_number = explode("\n", $request->phone_numbers);
-
-        // dd($phone_number);
-
-        foreach($phone_number as $phone){
-            //  RoyceBulkSMS::sendSMS($phone, $request->message);
-
-        }
-        return redirect('dashboard')->with('status','SMS sent successfully');
-
-    }
-
     public function contactsText(){
         $contacts= Contact::all();
 
@@ -176,38 +159,44 @@ class HomeController extends Controller
 
     }
 
+    public function sendContactsText(Request $request) {
+        $client = new Client();
 
-    public function sendContactsText(Request $request)
-    {
-        $token = '<token-provided>'; // Replace with your Sparrow SMS API token
-        $identity = '<Identity>'; // Replace with your sender identity
-        $recipientNumbers = implode(',', $request->phone_numbers);
+    try {
 
-        $args = http_build_query(array(
-            'token' => $token,
-            'from'  => $identity,
-            'to'    => $recipientNumbers,
-            'text'  => $request->message
-        ));
-
-        $url = "http://api.sparrowsms.com/v2/sms/";
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-        $response = curl_exec($ch);
-        $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($status_code == 200) {
-            return redirect('dashboard')->with('status', 'SMS sent successfully');
+        if ($request->salutation == 'No') {
+            $message = "Hello $request->first_name, $request->message";
         } else {
-            return redirect('dashboard')->with('error', 'Failed to send SMS');
+            $message = $request->message;
         }
+
+        $response = $client->post('https://sms.sociair.com/api/sms', [
+            'headers' => [
+                'Authorization' => 'Bearer your_bearer_token',
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+            ],
+            'json' => [
+                'message' => $message,
+                'mobile' => $request->phone_number,
+            ],
+        ]);
+
+        if ($response->getStatusCode() == 200) {
+
+            $responseData = json_decode($response->getBody(), true);
+
+            Log::info('SMS sent successfully: ' . $responseData['message']);
+        } else {
+            Log::error('Failed to send SMS: ' . $response->getBody());
+        }
+    } catch (\Exception $e) {
+        Log::error('Exception while sending SMS: ' . $e->getMessage());
     }
+
+    return redirect('landing')->with('status', 'SMS sent successfully');
+    }
+
 
     public function groupText(){
 
@@ -216,92 +205,4 @@ class HomeController extends Controller
         return view('grouptext',['groups'=>$groups]);
 
     }
-
-    public function sendGroupText(Request $request){
-
-        // dd($request->all());
-
-        foreach($request->groups as $group){
-            // $separate= explode('}',$phone);
-
-            $contacts= Contact::where('group_id',$group)->get();
-
-            foreach($contacts as $contact){
-                if($request->salutation=='Yes'){
-                $message="Hello $contact->first_name, $request->message";
-
-            }else{
-                $message=$request->message;
-
-            }
-
-
-
-            }
-
-            // dd($message);
-        }
-
-        return redirect('dashboard')->with('status','SMS sent successfully');
-
-    }
-
-    public function getDeliveryReport(){
-
-        return view('deliveryreport',['status'=>'Enter message ID from outbox']);
-
-    }
-
-    public function pDeliveryReport(Request $request){
-
-        $url = 'https://roycebulksms.com/api/delivery-report';
-        $apikey = env('API_KEY');
-        $response = Curl::to($url)
-            ->withData(array(
-                'message_id' => $request->message_id,
-                'sender_id' => env('SENDER_ID')
-                // 'text_message' => $message
-            ))
-            ->withBearer($apikey)
-            ->post();
-                Log::info($response);
-
-
-            if(!$response){
-
-                return view('deliveryreport',['status'=>'Check the message id and try again']);
-
-
-            }
-            $res = json_decode($response);
-
-
-            $text= SentTextMessage::where('message_id',$request->message_id)->first();
-            $text->delivery_status=$res->delivery_status;
-            $text->status=$res->delivery_status;
-            $text->delivery_tat=$res->delivery_tat;
-            $text->delivery_time=$res->delivery_time;
-
-            $text->save();
-
-            return view('deliveryreport',['status'=>'Delivery Report','report'=>$res]);
-
-
-    }
-
-    public function setWebhook(){
-        return view('webhook',['status'=>'Set Web hook URL']);
-
-    }
-
-    public function receiveDeliveryReport(Request $request)
-    {
-        //log::info($request->all());
-
-        $res = sentTextMessage::where('message_id',$request->message_id)->first();
-        $res->delivery_time=$request->delivery_time;
-        $res->delivery_tat=$request->delivery_tat;
-        $res->delivery_description=$request->delivery_description;
-        $res->save();
-    }
-}
+ }

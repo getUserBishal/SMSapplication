@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="alert alert-secondary alert-dismissible fade show" role="alert">
-                Click on salutation for custom single_message
+                Send Hllow only?
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -15,18 +15,20 @@
         </div>
     </div>
     <div style="background-color: rgb(228, 228, 228); padding: 20px; max-width: 600px; margin: 0 auto;">
-        <form method="POST" action="{{ url('group-text') }}">
+        <form method="POST" action="{{ url('contacts-text') }}">
             {{ csrf_field() }}
 
             <div>
                 <label>Phone Numbers</label>
-                <select id="phoneNumbersDropdown" class="form-control" onchange="single_updateSelectedNumber()">
+                <input type="hidden" id="single_selectedNumbersInput" name="selected_phone_number[]" value="">
+                <select id="phoneNumbersDropdown" class="form-control" onchange="single_updateSelectedNumber(this)">
                     <option value="">Select a number</option>
                     @foreach ($contacts as $item)
                         <option value="{{ $item->phone_number }}">{{ $item->phone_number }}</option>
                     @endforeach
                 </select>
-                <input type="hidden" id="single_selectedNumbersInput" name="selected_phone_number[]" value="">
+                <input type="text" id="single_selectedNumbersInput" name="selected_phone_number" value="">
+
 
             </div>
 
@@ -38,14 +40,14 @@
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="nepaliCheckbox" onchange="single_togglesingle_nepaliMode()">
-                    <label class="form-check-label" for="nepaliCheckbox">
+                    <label class="form-check-label"  for="nepaliCheckbox">
                         Nepali
                     </label>
                 </div>
             </div>
 
             <div>
-                <label>Include customization?</label>
+                <label>Send?</label>
                 <div>
                     <input type="radio" name="salutation" value="Yes" checked> Yes
                     <input type="radio" name="salutation" value="No"> No
@@ -184,15 +186,28 @@
             }
 
             function single_updateSelectedNumber() {
+                dd($data);
                 const selectedNumber = document.getElementById('phoneNumbersDropdown').value;
                 if (!single_selectedNumbers.includes(selectedNumber)) {
                     single_selectedNumbers.push(selectedNumber);
                     single_updateNumbers();
-                    document.getElementById('single_selectedNumbersInput').value = single_selectedNumbers.join(', ');
+                } else {
+                    console.log('Number already selected:', selectedNumber);
+                }
+                document.getElementById('single_selectedNumbersInput').value = selectedNumber;
+            }
+
+            function single_updateSelectedNumber() {
+                const selectedNumber = document.getElementById('phoneNumbersDropdown').value;
+                document.getElementById('single_selectedNumbersInput').value = selectedNumber;
+                if (!single_selectedNumbers.includes(selectedNumber)) {
+                    single_selectedNumbers.push(selectedNumber);
+                    single_updateNumbers();
                 } else {
                     console.log('Number already selected:', selectedNumber);
                 }
             }
+
 
 
             function single_addManualNumber() {
