@@ -60,7 +60,7 @@
         </div>
 
         <div class="form-group">
-            <input type="submit" class="btn btn-primary" value="Send SMS">
+            <input type="submit" class="btn btn-primary" value="Send SMS" onclick="return sendGroupSMS();">
         </div>
     </form>
 </div>
@@ -80,11 +80,15 @@
     }
 
     function group_updateNumbers() {
-        var ntCount = group_selectedNumbers.filter(num => group_getOperatorType(num) === 'NTC').length;
-        var ncCount = group_selectedNumbers.filter(num => group_getOperatorType(num) === 'NCELL').length;
+    var ntCount = group_selectedNumbers.filter(num => group_getOperatorType(num) === 'NTC').length;
+    var ncCount = group_selectedNumbers.filter(num => group_getOperatorType(num) === 'NCELL').length;
 
-        document.getElementById('numInfo').innerText = `Numbers: ${group_selectedNumbers.length} (NT ${ntCount} NC ${ncCount})`;
-    }
+    console.log('Selected Numbers:', group_selectedNumbers);
+    console.log('NTC Count:', ntCount);
+    console.log('NCELL Count:', ncCount);
+
+    document.getElementById('numInfo').innerText = `Numbers: ${group_selectedNumbers.length} (NT ${ntCount} NC ${ncCount})`;
+}
 
     function group_getOperatorType(mobil) {
         let mobile = mobil.trim();
@@ -99,49 +103,50 @@
             return '';
         }
     }
+
     function group_fetchGroupNumbers() {
     const selectedGroup = document.getElementById('groupSelect').value;
-    const groupNumbersInput = document.getElementById('groupNumbers');
-    const groupNumbersField = document.getElementById('groupNumbersField');
 
     if (selectedGroup) {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', `/fetch-group-numbers?group=${encodeURIComponent(selectedGroup)}`, true);
         xhr.onload = function() {
-    if (xhr.status === 200) {
-        try {
-            const numbers = JSON.parse(xhr.responseText);
-            groupNumbersInput.value = numbers.join(', ');
-            groupNumbersField.style.display = 'block';
-        } catch (error) {
-            console.error('Error parsing JSON response:', error);
-            groupNumbersInput.value = 'Error retrieving numbers';
-            groupNumbersField.style.display = 'none';
-        }
-    } else {
-        console.error('Request failed with status:', xhr.statusText);
-        groupNumbersInput.value = 'Error retrieving numbers';
-        groupNumbersField.style.display = 'none';
-    }
-};
-xhr.onerror = function() {
-    console.error('Network error occurred.');
-    groupNumbersInput.value = 'Error retrieving numbers';
-    groupNumbersField.style.display = 'none';
-};
+            if (xhr.status === 200) {
+                try {
+                    const groupNumbers = JSON.parse(xhr.responseText);
+                    console.log('Received group numbers:', groupNumbers);
+                    group_selectedNumbers = [];
+                    groupNumbers.forEach(number => {
+                        if (group_getOperatorType(number) !== '') {
+                            group_selectNumber(number);
+                        }
+                    });
+                    group_updateNumbers();
+                } catch (error) {
+                    console.error('Error parsing JSON response:', error);
+                }
+            } else {
+                console.error('Request failed with status:', xhr.statusText);
+            }
+        };
+        xhr.onerror = function() {
+            console.error('Network error occurred.');
+        };
 
         xhr.send();
     } else {
-        groupNumbersInput.value = '';
-        groupNumbersField.style.display = 'none';
+        group_selectedNumbers = [];
+        group_updateNumbers();
     }
 }
 
-    function group_displayGroupNumbers(numbers) {
-        const numbersInput = document.getElementById('groupNumbers');
-        numbersInput.value = numbers.join(', ');
-        document.getElementById('groupNumbersField').style.display = 'block';
+
+function group_selectNumber(phoneNumber) {
+    if (!group_selectedNumbers.includes(phoneNumber)) {
+        group_selectedNumbers.push(phoneNumber);
+        group_updateNumbers();
     }
+}
 
     async function group_updateInfo(text) {
         let charCount = text.length;
@@ -171,7 +176,7 @@ xhr.onerror = function() {
         document.getElementById('group_smsCount').innerText = 'SMS Count: ' + group_smsCount;
         document.getElementById('group_rateInfo').innerText = `group_rate: NT ${group_rate} NC ${group_rate}`;
 
-        var totalgroup_rate = group_smsCount * group_rate;
+        totalgroup_rate = group_smsCount * group_rate * group_selectedNumbers.length;
         document.getElementById('totalCost').innerText = `Total Cost (${group_rate.toFixed(2)} + ${group_rate.toFixed(2)}): ${(totalgroup_rate).toFixed(2)}`;
 
         if (group_nepaliMode) {
@@ -220,53 +225,58 @@ xhr.onerror = function() {
         document.getElementById('nepaliSuggestionsDropdown').style.display = 'none';
     }
 
-    function group_selectNumber(phoneNumber) {
-        group_selectedNumbers.push(phoneNumber);
-        group_updateNumbers();
-        document.getElementById('group_selectedNumbersInput').value = group_selectedNumbers.join(', ');
-    }
+    function sendGroupSMS() {
+        const message = document.getElementById('message').value;
+        const mobileNumbers = group_selectedNumbers.join(',');
 
-    function group_updateSelectedNumber() {
-        const selectedNumber = document.getElementById('phoneNumbersDropdown').value;
-        if (!group_selectedNumbers.includes(selectedNumber)) {
-            group_selectedNumbers.push(selectedNumber);
-            group_updateNumbers();
-            document.getElementById('group_selectedNumbersInput').value = group_selectedNumbers.join(', ');
-        } else {
-            console.log('Number already selected:', selectedNumber);
-        }
-    }
+        if (message && mobileNumbers) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'https://sms.sociair.com/api/sms', true);
+            xhr.setRequestHeader('Authorization', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiZDJhYWY4MzU3MDQ2ODhhY2JlNjRhZmM0YmQzYmExODdjZjhiMGJlYTcxZTZiYzRmZTE3YmQ2ZTU2MzU0NDYyNDFmYWRkODZkMDhhODY3OWIiLCJpYXQiOjE3MTIwMzUzODcuODA3OTgsIm5iZiI6MTcxMjAzNTM4Ny44MDc5ODYsImV4cCI6MTc0MzU3MTM4Ny43ODA5OTcsInN1YiI6IjEyNTciLCJzY29wZXMiOltdfQ.eJS_NUDVvuTrheHlcd8t8Sronp6DMTd2FC5KAWZBOwzCLMAbxQdwlYNFgRshsea9CB-bC3O1ORIJ0_SdPc3n7LtyiNb1chqGBRqJ018HUxU2ljl8GbKKzGo_zNsr9UuRKp4oEw5t40dPXCgmpKwaxooHfwx75p9YjOU072wO6KhAYl-I0sl5WIIcyOJuqxZiBqT3nnTYaFzitpKU3sAX0NEXT4L5wbrZt-mDbyUatifWVBS3VpjdBfTDPz4yH6y_2NoiNwePVhnqIUba0YykPAbALQdvP5bfPkAi3GoxoTCsagUR-Dcvk40WNd1I_vRO2YAdzwr9-9Cl-UFzo8E9Y1EnxWIUeR5mXb5l6iGVQ5bHxqtpQsTU-9WvN-1w1dzebZAAqJ6QD0DR2tPCZ4ZEDnXZK6KDPV4gWsscaieR3hMiJ84ct0VfuUnp18yC1VmVTd9_1F-YOpCEdBtGCo7TSK1kxGkNQwq3FCIAEeatx1lsbP-e9nWrEEP3jZklgEohF_W8wvyY5hEzXVQY1qwh7Z47XVxtwE6eFG3QTdo4BRtp8ccMFqY9l5JZQXdxFOANsngqwcDFmt-DDzCwev-EcXtCSBscOOstjh7lk6IWCdWP5qqelHV7RR9QsgFwUazEZoKW33yjLNjCbQ0QN2jJEEHCAfRXjzr4gGbfmVN0V6M');
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('Accept', 'application/json');
 
-    function group_selectAll() {
-        var checkboxes = document.getElementsByName('selected_phone_number[]');
-        var checkAll = document.getElementById('checkAll');
-
-        for (var i = 0; i < checkboxes.length; i++) {
-            checkboxes[i].checked = checkAll.checked;
-            if (checkAll.checked) {
-                group_selectNumber(checkboxes[i].value);
-            } else {
-                const index = group_selectedNumbers.indexOf(checkboxes[i].value);
-                if (index > -1) {
-                    group_selectedNumbers.splice(index, 1);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        console.log('SMS sent successfully:', response);
+                    } catch (error) {
+                        console.error('Error parsing response:', error);
+                    }
+                } else {
+                    try {
+                        const errorResponse = JSON.parse(xhr.responseText);
+                        console.error('SMS sending failed:', errorResponse);
+                    } catch (error) {
+                        console.error('Error parsing response:', error);
+                    }
                 }
-            }
+            };
+
+            xhr.onerror = function() {
+                console.error('Network error occurred.');
+            };
+
+            const requestData = {
+                message: message,
+                mobile: mobileNumbers
+            };
+
+            xhr.send(JSON.stringify(requestData));
+        } else {
+            console.error('Message or mobile numbers are missing.');
         }
-
-        group_updateNumbers();
-        document.getElementById('group_selectedNumbersInput').value = group_selectedNumbers.join(', ');
     }
-
 </script>
 <style>
-.group-dropdown-menu {
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 999;
-}
+    .group-dropdown-menu {
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 999;
+    }
 </style>
-

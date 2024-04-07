@@ -48,12 +48,10 @@ class HomeController extends Controller
     public function messages()
     {
         $messages = SentTextMessage::orderBy('id', 'desc')->paginate(50);
-        //dd($messages);
         return view('textmessage', ['messages' => $messages]);
     }
 
     public function deliveryReport(Request $request){
-        // Log::info($request);
         $txt = SentTextMessage::where('message_id', '=', $request->unique_id)->first();
         $txt->delivery_status = $request->delivery_status;
         $txt->delivery_code = $request->delivery_status;
@@ -66,7 +64,6 @@ class HomeController extends Controller
     }
 
     public function base(){
-        //dd('');
         return view('base');
 
     }
@@ -75,7 +72,6 @@ class HomeController extends Controller
         $contacts= Contact::join('contact_groups','contact_groups.id','=','contacts.group_id')
         ->select('contacts.*','contact_groups.name as group')
         ->get();
-        // dd($apikey);
         $groups=ContactGroup::all();
         return view('contacts',['contacts'=>$contacts,'status'=>'My Contact','groups'=>$groups]);
 
@@ -85,14 +81,11 @@ class HomeController extends Controller
 
         $contact=Contact::find($id)->delete();
         return back()->with('status','Contact deleted succesfully');
-        // return view('contacts',['status'=>'Contact deleted succesfully']);
 
     }
 
     public function contactsGroup(){
         $groups= ContactGroup::withCount('contacts')->get();
-        // dd($groups);
-        // dd($apikey);
         return view('contactgroups',['groups'=>$groups]);
 
     }
@@ -154,7 +147,7 @@ class HomeController extends Controller
     }
 
     public function sendContactsText(Request $request) {
-
+        dd($request);
         $client = new Client();
 
         try {
@@ -190,6 +183,15 @@ class HomeController extends Controller
         }
     }
 
+    public function fetchGroupNumbers(Request $request)
+{
+    $groupId = $request->query('group');
+
+    $groupNumbers = Contact::where('group_id', $groupId)->pluck('phone_number')->toArray();
+
+    return response()->json($groupNumbers);
+}
+
 
     public function groupText(){
 
@@ -198,4 +200,46 @@ class HomeController extends Controller
         return view('grouptext',['groups'=>$groups]);
 
     }
+
+public function sendGroupText(Request $request) {
+    $message = $request->message;
+    $mobileNumbers = $request->group_selectedNumbers;
+
+    if ($message && $mobileNumbers) {
+        $client = new Client();
+
+        try {
+            $requestData = [
+                'message' => $message,
+                'mobile' => implode(',', $mobileNumbers)
+            ];
+
+            $response = $client->post('https://sms.sociair.com/api/sms', [
+                'headers' => [
+                    'Authorization' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiZDJhYWY4MzU3MDQ2ODhhY2JlNjRhZmM0YmQzYmExODdjZjhiMGJlYTcxZTZiYzRmZTE3YmQ2ZTU2MzU0NDYyNDFmYWRkODZkMDhhODY3OWIiLCJpYXQiOjE3MTIwMzUzODcuODA3OTgsIm5iZiI6MTcxMjAzNTM4Ny44MDc5ODYsImV4cCI6MTc0MzU3MTM4Ny43ODA5OTcsInN1YiI6IjEyNTciLCJzY29wZXMiOltdfQ.eJS_NUDVvuTrheHlcd8t8Sronp6DMTd2FC5KAWZBOwzCLMAbxQdwlYNFgRshsea9CB-bC3O1ORIJ0_SdPc3n7LtyiNb1chqGBRqJ018HUxU2ljl8GbKKzGo_zNsr9UuRKp4oEw5t40dPXCgmpKwaxooHfwx75p9YjOU072wO6KhAYl-I0sl5WIIcyOJuqxZiBqT3nnTYaFzitpKU3sAX0NEXT4L5wbrZt-mDbyUatifWVBS3VpjdBfTDPz4yH6y_2NoiNwePVhnqIUba0YykPAbALQdvP5bfPkAi3GoxoTCsagUR-Dcvk40WNd1I_vRO2YAdzwr9-9Cl-UFzo8E9Y1EnxWIUeR5mXb5l6iGVQ5bHxqtpQsTU-9WvN-1w1dzebZAAqJ6QD0DR2tPCZ4ZEDnXZK6KDPV4gWsscaieR3hMiJ84ct0VfuUnp18yC1VmVTd9_1F-YOpCEdBtGCo7TSK1kxGkNQwq3FCIAEeatx1lsbP-e9nWrEEP3jZklgEohF_W8wvyY5hEzXVQY1qwh7Z47XVxtwE6eFG3QTdo4BRtp8ccMFqY9l5JZQXdxFOANsngqwcDFmt-DDzCwev-EcXtCSBscOOstjh7lk6IWCdWP5qqelHV7RR9QsgFwUazEZoKW33yjLNjCbQ0QN2jJEEHCAfRXjzr4gGbfmVN0V6M',
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                ],
+                'json' => $requestData,
+            ]);
+
+            if ($response->getStatusCode() === 200) {
+                $responseData = json_decode($response->getBody(), true);
+                Log::info('SMS sent successfully:', $responseData);
+                return redirect('landing')->with('status', 'SMS sent successfully');
+            } else {
+                Log::error('SMS sending failed:', $response->getBody());
+                return redirect('landing')->with('status', 'Failed to send SMS');
+            }
+        } catch (\Exception $e) {
+            Log::error('Exception while sending SMS:', $e->getMessage());
+            return redirect('landing')->with('status', 'Failed to send SMS');
+        }
+    } else {
+        Log::error('Message or mobile numbers are missing.');
+        return redirect('landing')->with('status', 'Message or mobile numbers are missing.');
+    }
+}
+
+
  }

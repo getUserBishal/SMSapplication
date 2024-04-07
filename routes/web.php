@@ -30,6 +30,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('single-text', [HomeController::class, 'sendSingleText']);
     Route::get('contacts-text', [HomeController::class, 'contactsText']);
     Route::post('contacts-text', [HomeController::class, 'sendContactsText']);
+    Route::get('/fetch-group-numbers', [HomeController::class, 'fetchGroupNumbers']);
 
     Route::get('group-text', [HomeController::class, 'groupText']);
     Route::post('group-text', [HomeController::class, 'sendGroupText']);
