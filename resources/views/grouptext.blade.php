@@ -226,6 +226,7 @@ function group_selectNumber(phoneNumber) {
     }
 
     function sendGroupSMS() {
+        event.preventDefault();
         const message = document.getElementById('message').value;
         const mobileNumbers = group_selectedNumbers.join(',');
 
@@ -241,6 +242,7 @@ function group_selectNumber(phoneNumber) {
                     try {
                         const response = JSON.parse(xhr.responseText);
                         console.log('SMS sent successfully:', response);
+
                     } catch (error) {
                         console.error('Error parsing response:', error);
                     }
