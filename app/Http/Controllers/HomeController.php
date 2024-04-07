@@ -114,11 +114,6 @@ class HomeController extends Controller
     }
 
     public function saveContacts(Request $request){
-        // dd($request->all());
-        // $this->validate($request,[
-        //     'first_namesf'=>'required'
-
-        // ]);
         $contact= new Contact();
         $contact->first_name=$request->first_name;
         $contact->other_names=$request->other_names;
