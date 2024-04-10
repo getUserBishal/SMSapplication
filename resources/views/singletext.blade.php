@@ -10,7 +10,7 @@
         </button>
     </div>
     <div style="background-color: rgb(228, 228, 228); padding: 20px; max-width: 600px; margin: 0 auto;">
-        <form action="{{ url('single-text') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('send.bulk.sms') }}" method="POST" enctype="multipart/form-data">
             {{ csrf_field() }}
             <div>
                 <div class="form-group">

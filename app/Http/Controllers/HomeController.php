@@ -8,6 +8,7 @@ use App\Models\SentTextMessage;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Excel;
 
 class HomeController extends Controller
 {
@@ -92,8 +93,6 @@ class HomeController extends Controller
 
     public function editGroup($id){
         $group= ContactGroup::find($id);
-
-        // $groups= ContactGroup::withCount('contacts')->get();
         return view('editgroup',['group'=>$group]);
     }
 
@@ -147,7 +146,6 @@ class HomeController extends Controller
     }
 
     public function sendContactsText(Request $request) {
-        dd($request);
         $client = new Client();
 
         try {
@@ -239,6 +237,73 @@ public function sendGroupText(Request $request) {
         Log::error('Message or mobile numbers are missing.');
         return redirect('landing')->with('status', 'Message or mobile numbers are missing.');
     }
+}
+
+public function sendBulkSMS(Request $request)
+{
+    $validatedData = $request->validate([
+        'phone_numbers_file' => 'required|file|mimes:txt,csv,xlsx,xls',
+        'bulk_message' => 'required|string',
+    ]);
+
+    // Get the phone numbers from the uploaded file
+    $phoneNumbers = $this->getPhoneNumbersFromFile($validatedData['phone_numbers_file']);
+
+    // Send the message to each phone number
+    $client = new Client();
+    $message = $validatedData['bulk_message'];
+
+    try {
+        foreach ($phoneNumbers as $mobileNumber) {
+            $requestData = [
+                'message' => $message,
+                'mobile' => $mobileNumber,
+            ];
+
+            $response = $client->post('https://sms.sociair.com/api/sms', [
+                'headers' => [
+                    'Authorization' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiZDJhYWY4MzU3MDQ2ODhhY2JlNjRhZmM0YmQzYmExODdjZjhiMGJlYTcxZTZiYzRmZTE3YmQ2ZTU2MzU0NDYyNDFmYWRkODZkMDhhODY3OWIiLCJpYXQiOjE3MTIwMzUzODcuODA3OTgsIm5iZiI6MTcxMjAzNTM4Ny44MDc5ODYsImV4cCI6MTc0MzU3MTM4Ny43ODA5OTcsInN1YiI6IjEyNTciLCJzY29wZXMiOltdfQ.eJS_NUDVvuTrheHlcd8t8Sronp6DMTd2FC5KAWZBOwzCLMAbxQdwlYNFgRshsea9CB-bC3O1ORIJ0_SdPc3n7LtyiNb1chqGBRqJ018HUxU2ljl8GbKKzGo_zNsr9UuRKp4oEw5t40dPXCgmpKwaxooHfwx75p9YjOU072wO6KhAYl-I0sl5WIIcyOJuqxZiBqT3nnTYaFzitpKU3sAX0NEXT4L5wbrZt-mDbyUatifWVBS3VpjdBfTDPz4yH6y_2NoiNwePVhnqIUba0YykPAbALQdvP5bfPkAi3GoxoTCsagUR-Dcvk40WNd1I_vRO2YAdzwr9-9Cl-UFzo8E9Y1EnxWIUeR5mXb5l6iGVQ5bHxqtpQsTU-9WvN-1w1dzebZAAqJ6QD0DR2tPCZ4ZEDnXZK6KDPV4gWsscaieR3hMiJ84ct0VfuUnp18yC1VmVTd9_1F-YOpCEdBtGCo7TSK1kxGkNQwq3FCIAEeatx1lsbP-e9nWrEEP3jZklgEohF_W8wvyY5hEzXVQY1qwh7Z47XVxtwE6eFG3QTdo4BRtp8ccMFqY9l5JZQXdxFOANsngqwcDFmt-DDzCwev-EcXtCSBscOOstjh7lk6IWCdWP5qqelHV7RR9QsgFwUazEZoKW33yjLNjCbQ0QN2jJEEHCAfRXjzr4gGbfmVN0V6M',
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                ],
+                'json' => $requestData,
+            ]);
+
+            if ($response->getStatusCode() !== 200) {
+                Log::error('SMS sending failed:', $response->getBody());
+                // Handle failure case
+            }
+        }
+
+        Log::info('SMS sent successfully');
+        return redirect('landing')->with('status', 'SMS sent successfully');
+    } catch (\Exception $e) {
+        Log::error('Exception while sending SMS:', $e->getMessage());
+        return redirect('landing')->with('status', 'Failed to send SMS');
+    }
+}
+
+private function getPhoneNumbersFromFile($file)
+{
+    $extension = $file->getClientOriginalExtension();
+
+    switch ($extension) {
+        case 'txt':
+            $numbers = preg_split('/\r\n|\r|\n/', file_get_contents($file));
+            break;
+        case 'csv':
+        case 'xlsx':
+        case 'xls':
+            $numbers = Excel::toArray(null, $file)[0];
+            break;
+        default:
+            return [];
+    }
+
+    // Remove any non-numeric values
+    return array_filter($numbers, function ($value) {
+        return is_numeric($value);
+    });
 }
 
 

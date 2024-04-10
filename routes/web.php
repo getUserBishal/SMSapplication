@@ -15,10 +15,11 @@ Route::get('/landing', [HomeController::class, 'index'])->name('landing');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('royceroute', [HomeController::class, 'index']);
-    Route::get('dashboard', [HomeController::class, 'messages']);
+    Route::get('landing', [HomeController::class, 'messages']);
     Route::get('/', [HomeController::class, 'messages']);
     Route::get('/message_dashboard', [HomeController::class, 'message_dashboard'])->name('message_dashboard');
     Route::get('/landing', [HomeController::class, 'landing'])->name('landing');
+    Route::post('/send-bulk-sms', 'YourController@sendBulkSMS')->name('send.bulk.sms');
 
     Route::get('base', [HomeController::class, 'base']);
     Route::post('deliveryreport', [HomeController::class, 'deliveryReport']);
